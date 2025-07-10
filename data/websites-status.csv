@@ -1,0 +1,539 @@
+Links,Status
+http://365wellness.health/,"Not Working (HTTPConnectionPool(host='365wellness.health', port=80): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPConnection object at 0x000001A11A0095B0>: Failed to resolve '365wellness.health' ([Errno 11002] getaddrinfo failed)"")))"
+http://4metaenergy.com/,Working
+http://insiyah.ae/,"Not Working (HTTPConnectionPool(host='insiyah.ae', port=80): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPConnection object at 0x000001A11A06C770>: Failed to resolve 'insiyah.ae' ([Errno 11001] getaddrinfo failed)"")))"
+http://lp.persmile.co.il/,"Not Working (HTTPConnectionPool(host='lp.persmile.co.il', port=80): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPConnection object at 0x000001A11A06C920>: Failed to resolve 'lp.persmile.co.il' ([Errno 11001] getaddrinfo failed)"")))"
+http://smallthingspetsitting.com/,Error 406
+https://abstract-ai.com/,Working
+https://adventurextreme.ae/,Error 500
+https://amaluxurytransport.com/,"Not Working (HTTPSConnectionPool(host='amaluxurytransport.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06DBE0>: Failed to resolve 'amaluxurytransport.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://asaturi.tvistech.com/,"Not Working (HTTPSConnectionPool(host='asaturi.tvistech.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06D670>: Failed to resolve 'asaturi.tvistech.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://bizcoconsultancy.com/,Working
+https://esporter.win/home-2/,Working
+https://ezbarbersupply.com/,"Not Working (HTTPSConnectionPool(host='theezbargain.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1010)'))))"
+https://famousinmadison.com/,"Not Working (HTTPSConnectionPool(host='famousinmadison.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06CE60>: Failed to resolve 'famousinmadison.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://flambeaubabbel.com/,"Not Working (HTTPSConnectionPool(host='flambeaubabbel.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06E600>: Failed to resolve 'flambeaubabbel.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://flipperinvestmentsllc.com/,"Not Working (HTTPSConnectionPool(host='flipperinvestmentsllc.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06EF00>: Failed to resolve 'flipperinvestmentsllc.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://givebacksolar.org/,Error 403
+https://godavisfreight.com/,Working
+https://greatplainsgutters.com/,"Not Working (HTTPSConnectionPool(host='greatplainsgutters.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, ""[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'greatplainsgutters.com'. (_ssl.c:1010)""))))"
+https://hakimilogistics.com/,Error 403
+https://harkhunter.com/,Working
+https://innovativesolutionsllc.com/,Working
+https://insitech.ae/,Working
+https://legacydevelopments.ky/,Working
+https://modpiercing.com/,"Not Working (HTTPSConnectionPool(host='modpiercing.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1010)'))))"
+https://muhammadprojects.com/allseason-digital/,Error 404
+https://munchiezmiamivending.com/,Working
+https://myeweightlossjourney.com/,"Not Working (HTTPSConnectionPool(host='myeweightlossjourney.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06E7B0>: Failed to resolve 'myeweightlossjourney.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://mylres.com/,Working
+https://myprimarycleaning.com/,Error 406
+https://ngentech.net/,Working
+https://offerock.com/,Working
+https://ozvacationservices.com/,Error 500
+https://prestigepet-sitting.net/,Error 406
+https://remove.org/,Error 406
+https://sequoiatherapy.com/,Working
+https://sgroup.agency/,Error 500
+https://smallthingspetsitting.com/,Error 406
+https://stvaonline.com/,Working
+https://teachlearnlead.net/,Error 406
+https://teampuggi.com/,Working
+https://tencowtees.com/,Error 406
+https://tritonsoundresidential.com/,Working
+https://urbancastleloans.com/,"Not Working (HTTPSConnectionPool(host='urbancastleloans.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06E420>: Failed to resolve 'urbancastleloans.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://urbanhealthgroupinc.org/,Working
+https://viridia.ky/,Working
+https://www.advancedxl.com/,Working
+https://www.civicaibot.com/,"Not Working (HTTPSConnectionPool(host='www.civicaibot.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06E4E0>: Failed to resolve 'www.civicaibot.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://www.drmsusa.com/,Error 406
+https://zenergyhp.com/bossladyhealth/,Working
+https://jegnite.com/,Working
+https://freetenniscourts.com/,Working
+https://www.trianglesmartdivorce.com/,Working
+https://hurghada.com/,Working
+https://geraldinegarcia.net/,Working
+https://homebright.io/,"Not Working (HTTPSConnectionPool(host='homebright.io', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06F860>: Failed to resolve 'homebright.io' ([Errno 11001] getaddrinfo failed)"")))"
+https://teccolorcraft.com/,Working
+https://subject2.com/,Working
+https://loansimple.com/retail-detail/,Error 403
+https://10xacademy.org/,Error 404
+https://dadrainfellas.com/,Working
+https://amplifywash.com/,Working
+https://lservicesthecompany.com/,Working
+https://designoflex.com/,Working
+https://esporter.win/landing-page/#,Working
+https://blackcedarinvestments.com/,Working
+https://aspectstaging.com/,Working
+https://www.ampd.io/ampd-benchmark,Error 404
+https://simonbroslabs.com/,Working
+https://thevalemagazine.com/,Working
+https://maloneyinjurylawfirm.com/,Working
+https://dallasmdassociates.com/,Working
+https://www.threefarmfinancial.com/,Working
+https://crescent-trading.com/,Working
+https://worldtimemedia.com/,"Not Working (HTTPSConnectionPool(host='worldtimemedia.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06D6A0>: Failed to resolve 'worldtimemedia.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://nypifirm.com/,Working
+https://www.legendnt.com/,Working
+https://www.toons-ville.com/,Working
+https://commercialplus.com/,Working
+https://koyathletic.com/,Working
+https://pharmadrug.ca/,Working
+https://www.clairmontcg.com/,Working
+https://findtalent.superrecruiter.io/,"Not Working (HTTPSConnectionPool(host='findtalent.superrecruiter.io', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06C5F0>: Failed to resolve 'findtalent.superrecruiter.io' ([Errno 11001] getaddrinfo failed)"")))"
+https://elcpa.com/,Working
+https://courses.darrenmain.com/,"Not Working (HTTPSConnectionPool(host='courses.darrenmain.com', port=443): Max retries exceeded with url: / (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1010)'))))"
+https://namg.us/,Working
+https://imagitservices.com/,"Not Working (HTTPSConnectionPool(host='imagitservices.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06CD40>: Failed to resolve 'imagitservices.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://www.ochealthysmiles.com/landing-page-2/,Working
+https://dukerei.com/,"Not Working (HTTPSConnectionPool(host='dukerei.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06EC30>: Failed to resolve 'dukerei.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://senoa.io/,Working
+https://www.muhammadprojects.com/lift-aviation/,Working
+https://muhammadprojects.com/donation-nation/,Working
+https://muhammadprojects.com/bio-rebalance/,Error 404
+https://muhammadprojects.com/Jegnite/,Error 404
+https://muhammadprojects.com/plurality/,Error 404
+https://www.muhammadprojects.com/jill-baker/,Working
+https://www.muhammadprojects.com/nft/,Error 404
+https://gentrycleanersinc.com/,Working
+https://muhammadprojects.com/rob-kaufman/,Working
+https://muhammadprojects.com/pita-street-food/,Working
+https://www.muhammadprojects.com/startosphere-v2/,Working
+https://muhammadprojects.com/vitamin-estate/,Error 404
+https://www.muhammadprojects.com/torch/,Working
+https://muhammadprojects.com/steak-for-breakfast/,Working
+https://muhammadprojects.com/wartime/,Working
+https://muhammadprojects.com/dude-trip/,Error 404
+https://muhammadprojects.com/sea-glass/,Working
+https://www.muhammadprojects.com/william-thomas/,Working
+https://www.muhammadprojects.com/florentine-jewelry/,Working
+https://muhammadprojects.com/ensemble/,Working
+https://www.muhammadprojects.com/law-order/,Working
+https://muhammadprojects.com/black-cedar-investments/,Error 404
+https://muhammadprojects.com/saunder/,Error 404
+https://www.muhammadprojects.com/maineri-law-firm/,Working
+https://muhammadprojects.com/tomes-law/,Error 404
+https://www.muhammadprojects.com/opt/,Error 404
+NOTWORKINGDONOTUSEcontent-spectrum/,Not Working (Invalid URL 'NOTWORKINGDONOTUSEcontent-spectrum/': No scheme supplied. Perhaps you meant https://NOTWORKINGDONOTUSEcontent-spectrum/?)
+https://www.muhammadprojects.com/myopia-control/,Working
+https://muhammadprojects.com/robert-williams/,Error 404
+https://muhammadprojects.com/jack-rose/,Working
+https://muhammadprojects.com/black-rhino/,Error 404
+https://www.muhammadprojects.com/calico-music/,Working
+https://muhammadprojects.com/altumsolutions,Working
+https://www.muhammadprojects.com/industrial-environmental/,Working
+https://muhammadprojects.com/hope-for-dogs/,Error 404
+https://muhammadprojects.com/athena/,Error 404
+https://www.muhammadprojects.com/three-farm/,Error 404
+https://www.muhammadprojects.com/democratic-school/,Working
+https://muhammadprojects.com/integrity/,Error 404
+https://muhammadprojects.com/vva17/,Error 404
+https://muhammadprojects.com/muscle-magic/#,Working
+https://www.muhammadprojects.com/startosphere-v3/,Working
+https://muhammadprojects.com/runningspace/,Error 404
+https://muhammadprojects.com/rip-city/,Working
+https://www.muhammadprojects.com/eskesen/,Error 404
+https://muhammadprojects.com/enchanted/,Working
+https://boardlinedev.wpengine.com/,Error 404
+https://insitechstaging.com/demo/oz-vacation/,Error 404
+https://insitechstaging.com/demo/diy/wp/,Error 404
+https://insitechstaging.com/demo/vaxa/wp/,Error 404
+https://insitechstaging.com/demo/duro-athletics/product.php,Error 404
+insitechstaging.com/demo/kd-traders-international,Not Working (Invalid URL 'insitechstaging.com/demo/kd-traders-international': No scheme supplied. Perhaps you meant https://insitechstaging.com/demo/kd-traders-international?)
+https://insitechstaging.com/demo/diablovpn/,Error 404
+https://insitechstaging.com/demo/regional-broker/,Error 404
+https://insitechstaging.com/demo/pavilion/,Working
+https://insitechstaging.com/demo/injury-lawyer/,Error 404
+https://insitechstaging.com/demo/saqib-filling-station/wp/,Error 404
+https://attiviastaging.com/usb-busa/index.php,"Not Working (HTTPSConnectionPool(host='attiviastaging.com', port=443): Max retries exceeded with url: /usb-busa/index.php (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1010)'))))"
+https://insitechstaging.com/demo/missionequitycapital/,Error 404
+https://insitechstaging.com/demo/jounrey/wp/,Error 500
+insitechstaging.com/demo/jlj,Not Working (Invalid URL 'insitechstaging.com/demo/jlj': No scheme supplied. Perhaps you meant https://insitechstaging.com/demo/jlj?)
+https://attiviastaging.com/alco/,"Not Working (HTTPSConnectionPool(host='attiviastaging.com', port=443): Max retries exceeded with url: /alco/ (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1010)'))))"
+https://insitechstaging.com/demo/pro-auto-towing/,Working
+insitechstaging.com/demo/executive-financial-management-inc,Not Working (Invalid URL 'insitechstaging.com/demo/executive-financial-management-inc': No scheme supplied. Perhaps you meant https://insitechstaging.com/demo/executive-financial-management-inc?)
+https://clients.muhammadprojects.com/click/,Error 500
+https://clients.muhammadprojects.com/insitechv3/,Working
+https://clients.muhammadprojects.com/greenwayv1/,Error 500
+https://clients.muhammadprojects.com/harley-reed/,Error 500
+https://clients.muhammadprojects.com/allseason-digital/,Error 500
+https://clients.muhammadprojects.com/great-plain/,Error 500
+https://clients.muhammadprojects.com/insitechv2/,Working
+https://clients.muhammadprojects.com/ingress-dubai-restaurant/,Error 500
+https://clients.muhammadprojects.com/theodore/,Working
+https://clients.muhammadprojects.com/give-back-solar/,Error 500
+https://clients.muhammadprojects.com/legacy/,Error 500
+https://clients.muhammadprojects.com/detore/,Working
+https://clients.muhammadprojects.com/toons-ville/,Working
+https://clients.muhammadprojects.com/gentry-cleaner/,Error 500
+https://clients.muhammadprojects.com/back-pain/,Error 500
+https://clients.muhammadprojects.com/invicta-consulting/,Error 500
+https://clients.muhammadprojects.com/sea-of-strength/,Error 500
+https://clients.muhammadprojects.com/content-spectum/,Error 500
+NOTWORKINGDONOTUSEsmall-things-pet/,Not Working (Invalid URL 'NOTWORKINGDONOTUSEsmall-things-pet/': No scheme supplied. Perhaps you meant https://NOTWORKINGDONOTUSEsmall-things-pet/?)
+https://clients.muhammadprojects.com/casaconnect/,Error 500
+NOTWORKINGDONOTUSEhanya-nur/,Not Working (Invalid URL 'NOTWORKINGDONOTUSEhanya-nur/': No scheme supplied. Perhaps you meant https://NOTWORKINGDONOTUSEhanya-nur/?)
+https://clients.muhammadprojects.com/vitalityskin/,Error 500
+https://clients.muhammadprojects.com/elcpa/,Error 500
+https://clients.muhammadprojects.com/adwerx/,Error 500
+https://clients.muhammadprojects.com/diablovpn/,Error 500
+https://clients.muhammadprojects.com/INKY-BLACKNESS/,Error 500
+https://clients.muhammadprojects.com/paramount/,Error 500
+https://clients.muhammadprojects.com/la-development/,Error 500
+https://clients.muhammadprojects.com/recovery-roofing/,Error 500
+https://clients.muhammadprojects.com/da-drain-fellas/,Error 500
+https://clients.muhammadprojects.com/super-reccruiter/,Error 500
+https://clients.muhammadprojects.com/clutch/,Error 500
+https://clients.muhammadprojects.com/apekshya/,Error 500
+https://clients.muhammadprojects.com/tech-color/#,Error 500
+https://clients.muhammadprojects.com/kultureinstitue/,Error 500
+https://clients.muhammadprojects.com/mobilemodality/,Error 500
+https://clients.muhammadprojects.com/insitechv1/,Working
+https://clients.muhammadprojects.com/william-thomas/,Error 500
+https://clients.muhammadprojects.com/dnd3/,Error 500
+https://clients.muhammadprojects.com/jlj/,Error 500
+https://clients.muhammadprojects.com/missionequitycapital/,Error 500
+https://clients.muhammadprojects.com/free-tennis-courts/,Error 500
+https://clients.muhammadprojects.com/clairmont/,Error 500
+https://clients.muhammadprojects.com/ibercia/,Error 500
+https://clients.muhammadprojects.com/fantopia/,Error 500
+https://clients.muhammadprojects.com/molinos/,Error 500
+https://clients.muhammadprojects.com/crescent-rides/,Error 500
+https://clients.muhammadprojects.com/scrub-perfect/,Error 500
+https://clients.muhammadprojects.com/civic-ai/,Error 500
+https://clients.muhammadprojects.com/northern-arizona/,Working
+https://beauty-salon-react.surge.sh/,Working
+https://muhammadprojects.com/beauty-salon/,Working
+https://www.vitalityskin.com.au/,Error 406
+https://insitechstaging.com/demo/stylist-factory/wp/,Working
+https://portfolio.muhammadprojects.com/kultureinstitue/,Working
+https://mybeautysite.com/,Working
+https://muhammadprojects.com/rhythm-experts/,Working
+https://portfolio.muhammadprojects.com/INKY-BLACKNESS/,Working
+https://portfolio.muhammadprojects.com/apekshya/,Working
+https://desertknightpainting.com/,Working
+https://portfolio.muhammadprojects.com/tima-journal,Working
+https://muhammadprojects.com/BrushWolfClothing/,Working
+https://hanyanurcollections.com/,Working
+https://portfolio.muhammadprojects.com/duro-athletics/,Working
+https://wilsoncommunityoutreach.org/,Working
+https://chef-monkey.com/,Working
+https://portfolio.muhammadprojects.com/thefrgn/,Working
+https://chiheirluums.com/,Working
+https://www.muhammadprojects.com/jodi-picoult/,Working
+https://insitechstaging.com/demo/atf-contracting/,Working
+https://insitechstaging.com/demo/art-of-marbles,Working
+https://insitechstaging.com/demo/brochure-design/,Working
+https://insitechstaging.com/demo/financial-literacy,Working
+https://insitechstaging.com/demo/getting-sheared/wp-admin/,Working
+https://insitechstaging.com/demo/greatwork-logistics/,Working
+https://insitechstaging.com/demo/luckybackyard/customwp/,Working
+https://insitechstaging.com/demo/badboystrain/,Working
+https://insitechstaging.com/demo/barefoot-xpress,Working
+https://insitechstaging.com/demo/weapon-retention/,Working
+https://insitechstaging.com/demo/westminsterparty,Working
+https://insitechstaging.com/demo/boiling-wit/,Working
+https://insitechstaging.com/demo/bromley-collision,Working
+https://insitechstaging.com/demo/calgary-markets/wp-admin/,Working
+https://insitechstaging.com/demo/charles-clark,Working
+https://insitechstaging.com/demo/children-band/,Working
+https://insitechstaging.com/demo/cupsmx/,Working
+https://insitechstaging.com/demo/dakam/,Working
+https://insitechstaging.com/demo/DL-Tax-solution/,Working
+https://insitechstaging.com/demo/dropshipping/wp/,Working
+https://insitechstaging.com/demo/evergreen,Working
+https://insitechstaging.com/demo/lucky-old/,Working
+https://insitechstaging.com/demo/soldier-mountain-highland/,Working
+https://insitechstaging.com/demo/spectrum-group,Working
+https://insitechstaging.com/demo/sustainatech/,Working
+https://insitechstaging.com/demo/transportation-trend-setter/,Working
+https://insitechstaging.com/demo/jounrey/,Working
+https://insitechstaging.com/demo/kadobu,Working
+https://insitechstaging.com/demo/iron-gate,Working
+https://insitechstaging.com/demo/martialartsinthepark/,Working
+https://insitechstaging.com/demo/monsoon-security/,Working
+https://insitechstaging.com/demo/price-refractory/,Working
+https://insitechstaging.com/demo/stylist-factory/wp/wp-admin/,Working
+https://insitechstaging.com/demo/zee-media/,Working
+https://insitechstaging.com/demo/lazzat,Working
+https://insitechstaging.com/demo/philanthrocapitalistreview,Working
+https://insitechstaging.com/demo/vaultofbeauty,Working
+https://insitechstaging.com/demo/voxa-marketing/wp/,Working
+https://insitechstaging.com/demo/jeff-macgrandles/,Working
+https://insitechstaging.com/demo/contour-cabinets/,Working
+https://insitechstaging.com/demo/jonathan/,Working
+https://insitechstaging.com/demo/limitless-equine,Working
+https://insitechstaging.com/demo/weight-pullers/,Working
+https://insitechstaging.com/demo/conte-stanley/,Working
+https://insitechstaging.com/demo/eric-scott/,Working
+https://insitechstaging.com/demo/alberto-herrera/,Working
+https://insitechstaging.com/demo/kerry-kinard/,Working
+https://insitechstaging.com/demo/gary-yancy/,Working
+https://insitechstaging.com/demo/organx/,Working
+https://insitechstaging.com/demo/titans/,Working
+https://insitechstaging.com/demo/steve-grinding/,Working
+https://insitechstaging.com/demo/tnt-services/,Working
+https://insitechstaging.com/demo/rgc-groove/,Working
+https://insitechstaging.com/demo/circo-circus-funland/,Working
+https://insitechstaging.com/demo/four-sight/,Working
+https://insitechstaging.com/demo/rthompson/,Working
+https://insitechstaging.com/demo/brand-02,Working
+https://insitechstaging.com/demo/calender/,Working
+https://insitechstaging.com/demo/mike-baker/,Error 404
+https://insitechstaging.com/demo/wyatt-johnson/,Working
+https://insitechstaging.com/demo/noir-moolah/,Working
+https://insitechstaging.com/demo/james-veon/,Working
+https://insitechstaging.com/demo/triple-star/,Working
+https://insitechstaging.com/demo/ferno/,Working
+https://insitechstaging.com/demo/zachary-farrow/,Working
+https://insitechstaging.com/demo/terra-nova/,Working
+https://insitechstaging.com/demo/AM-auto-body,Working
+https://insitechstaging.com/demo/travel-agency,Working
+https://insitechstaging.com/demo/relocate-travel,Working
+https://insitechstaging.com/demo/cruise-landing/,Working
+https://insitechstaging.com/demo/twb-company/,Working
+https://portfolio.muhammadprojects.com/empowercareinsurance/,Working
+https://portfolio.muhammadprojects.com/civic-ai/,Working
+https://portfolio.muhammadprojects.com/yancyswingznthingz/,Working
+https://portfolio.muhammadprojects.com/legacy/,Working
+https://portfolio.muhammadprojects.com/give-back-solar/,Working
+https://portfolio.muhammadprojects.com/tech-color,Working
+https://portfolio.muhammadprojects.com/intern/,Working
+https://portfolio.muhammadprojects.com/da-drain-fellas/,Working
+https://portfolio.muhammadprojects.com/toons-ville/,Working
+https://portfolio.muhammadprojects.com/paramount/,Working
+https://portfolio.muhammadprojects.com/free-tennis-courts/,Working
+https://portfolio.muhammadprojects.com/fantopia/,Working
+https://portfolio.muhammadprojects.com/voyage-v2/,Working
+https://portfolio.muhammadprojects.com/great-plain/,Working
+https://portfolio.muhammadprojects.com/handyman/,Working
+https://portfolio.muhammadprojects.com/charles/,Working
+https://portfolio.muhammadprojects.com/clairmont/,Working
+https://portfolio.muhammadprojects.com/content-spectum/,Working
+https://portfolio.muhammadprojects.com/betterhome3/,Working
+https://portfolio.muhammadprojects.com/functional-remedies/,Working
+https://portfolio.muhammadprojects.com/invicta-consulting/,Working
+https://portfolio.muhammadprojects.com/la-development/,Working
+https://portfolio.muhammadprojects.com/oz-vacations/,Working
+https://portfolio.muhammadprojects.com/hurghada/,Working
+https://portfolio.muhammadprojects.com/mylres/,Working
+https://portfolio.muhammadprojects.com/allseason-digital/,Working
+https://portfolio.muhammadprojects.com/adwerx/,Working
+https://portfolio.muhammadprojects.com/dnd3/,Working
+https://portfolio.muhammadprojects.com/gentry-cleaner/,Working
+https://portfolio.muhammadprojects.com/recovery-roofing/,Working
+https://portfolio.muhammadprojects.com/cdp-law-coming/,Working
+https://portfolio.muhammadprojects.com/diystair/,Working
+https://portfolio.muhammadprojects.com/janover-2/,Working
+https://portfolio.muhammadprojects.com/greenwayv1/,Working
+https://portfolio.muhammadprojects.com/clutch/,Working
+https://portfolio.muhammadprojects.com/scrub-perfect/,Working
+https://portfolio.muhammadprojects.com/animal-damage-control/,Working
+https://portfolio.muhammadprojects.com/esporter/,Working
+https://portfolio.muhammadprojects.com/greenlight-solar/,Working
+https://portfolio.muhammadprojects.com/loan-simple/,Working
+https://portfolio.muhammadprojects.com/casaconnect/,Working
+https://portfolio.muhammadprojects.com/Franchise-Rockstars/,Working
+https://portfolio.muhammadprojects.com/onpoint/,Working
+https://portfolio.muhammadprojects.com/cdp-law/,Working
+https://portfolio.muhammadprojects.com/legend/,Working
+https://portfolio.muhammadprojects.com/dukerei/,Working
+https://portfolio.muhammadprojects.com/sea-of-strength/,Working
+https://portfolio.muhammadprojects.com/triton/,Working
+https://portfolio.muhammadprojects.com/click/,Working
+https://portfolio.muhammadprojects.com/ibercia/,Working
+https://portfolio.muhammadprojects.com/detore,Working
+https://portfolio.muhammadprojects.com/molinos,Working
+https://portfolio.muhammadprojects.com/wilsoncommunityoutreach/,Working
+https://portfolio.muhammadprojects.com/missionequitycapital/,Working
+https://portfolio.muhammadprojects.com/mobilemodality/,Working
+https://portfolio.muhammadprojects.com/chiheirluums/,Working
+https://portfolio.muhammadprojects.com/gf-usa,Working
+https://portfolio.muhammadprojects.com/chef-monkey/,Working
+https://portfolio.muhammadprojects.com/back-pain/,Working
+https://portfolio.muhammadprojects.com/kultureinstitue,Working
+https://portfolio.muhammadprojects.com/crescent-rides/,Working
+https://portfolio.muhammadprojects.com/harley-reed/,Working
+https://portfolio.muhammadprojects.com/usb-busa/,Working
+https://portfolio.muhammadprojects.com/vitalityskin/,Working
+https://portfolio.muhammadprojects.com/super-reccruiter/,Working
+https://portfolio.muhammadprojects.com/swyft/,Working
+https://portfolio.muhammadprojects.com/neuroplate/,Working
+https://portfolio.muhammadprojects.com/valence-chems/,Working
+https://portfolio.muhammadprojects.com/uhler-management/,Working
+https://portfolio.muhammadprojects.com/precision-valuation/,Working
+https://portfolio.muhammadprojects.com/tima-journal/,Working
+https://portfolio.muhammadprojects.com/vaxa-property-management/,Working
+https://portfolio.muhammadprojects.com/preppylittlemissy,Working
+https://portfolio.muhammadprojects.com/gutter-guys/,Working
+https://portfolio.muhammadprojects.com/the-business-sherpas/,Working
+https://portfolio.muhammadprojects.com/bounce-studio/,Working
+https://portfolio.muhammadprojects.com/injury-law-firm,Working
+https://portfolio.muhammadprojects.com/injury-lawyer/,Working
+https://portfolio.muhammadprojects.com/shuckfamilyplumbing/,Working
+https://portfolio.muhammadprojects.com/pavilion/,Working
+https://portfolio.muhammadprojects.com/saqib-filling-station/,Working
+https://portfolio.muhammadprojects.com/dfop/,Working
+https://portfolio.muhammadprojects.com/csfcompany/,Working
+https://portfolio.muhammadprojects.com/bromley-collision/,Working
+https://portfolio.muhammadprojects.com/masea-house/,Working
+https://portfolio.muhammadprojects.com/getting-sheared/,Working
+https://portfolio.muhammadprojects.com/desert-knight-painting/,Working
+https://portfolio.muhammadprojects.com/gamegain/,Working
+https://portfolio.muhammadprojects.com/cadavid-solutions/,Working
+https://portfolio.muhammadprojects.com/ancile-group/,Working
+https://portfolio.muhammadprojects.com/archangelsafetyllc/,Working
+https://portfolio.muhammadprojects.com/almaraz-tree-service/,Working
+https://portfolio.muhammadprojects.com/AM-auto-body/,Working
+https://portfolio.muhammadprojects.com/nala-enterprises/,Working
+https://portfolio.muhammadprojects.com/drink-n-spin/,Working
+https://portfolio.muhammadprojects.com/fabric-life-miami/,Working
+https://portfolio.muhammadprojects.com/sustainatech/,Working
+https://portfolio.muhammadprojects.com/lehigh-valleymovers/,Working
+https://portfolio.muhammadprojects.com/corey-roehl/,Working
+https://portfolio.muhammadprojects.com/pacificsfinestconstructioninc/,Working
+https://portfolio.muhammadprojects.com/ingress-dubai-restaurant/,Working
+https://portfolio.muhammadprojects.com/foursight/,Working
+https://portfolio.muhammadprojects.com/diablovpn/,Working
+https://clients.muhammadprojects.com/new-muhammad/,Working
+https://clients.muhammadprojects.com/portfolio/portfollogin,Working
+https://clients.muhammadprojects.com/handyman/,Working
+https://clients.muhammadprojects.com/betterhome3/,Working
+https://clients.muhammadprojects.com/functional-remedies/,Working
+https://clients.muhammadprojects.com/brand-insitech/,Working
+https://clients.muhammadprojects.com/cdp-law-coming/,Working
+https://clients.muhammadprojects.com/janover-2/,Working
+https://clients.muhammadprojects.com/beauty-salon-v2/,Working
+https://clients.muhammadprojects.com/animal-damage-control/,Working
+https://clients.muhammadprojects.com/esporter/,Error 500
+https://clients.muhammadprojects.com/greenlight-solar/,Working
+https://clients.muhammadprojects.com/Franchise-Rockstars/,Working
+https://clients.muhammadprojects.com/roy-swanson/,Working
+https://clients.muhammadprojects.com/split-slab/,Working
+https://clients.muhammadprojects.com/pointerrs/,Working
+https://clients.muhammadprojects.com/county-agency/login.php,Working
+https://clients.muhammadprojects.com/beauty-site/,Working
+https://clients.muhammadprojects.com/NYSP/,Working
+https://clients.muhammadprojects.com/senoa/,Working
+https://clients.muhammadprojects.com/healthy-shoes/,Working
+https://clients.muhammadprojects.com/voxa-web/,Working
+fabriclifemiami.com,Not Working (Invalid URL 'fabriclifemiami.com': No scheme supplied. Perhaps you meant https://fabriclifemiami.com?)
+https://jmkwoodcreations.com/,Working
+https://desertknightpainting.com/login-admin,Error 404
+https://cadavidsolutionsltd.com/,Working
+https://nalaenterprises.com/,Working
+https://overeasyhospitality.info/,Working
+https://pacificsfinestconstructioninc.com/,Working
+https://sustainatech.co.uk/,Working
+https://yancyswingznthingz.com/,Working
+https://gf-usa.org/,Working
+https://empowercareinsurance.com/,Working
+https://raleighgradgrooves.com/,Working
+http://northidahofirearms.com/,Working
+https://safeshipping.us/,Working
+https://circocircusfunland.com/,Working
+https://contourcabinetsrta.com/,Working
+https://choloblanco.com/,Working
+https://muhammadprojects.com/butler-mcdonald/,Working
+https://muhammadprojects.com/calico-music/,Working
+https://muhammadprojects.com/canadian-joist/,Working
+https://muhammadprojects.com/donation-nation,Working
+https://muhammadprojects.com/enchanted,Working
+https://muhammadprojects.com/florentine-jewelry,Working
+https://muhammadprojects.com/immune-central/,Working
+https://muhammadprojects.com/jill-baker/,Working
+https://muhammadprojects.com/alasca-tours/,Working
+https://muhammadprojects.com/allied-extract/,Working
+https://muhammadprojects.com/Blue-mermaid-restaurant/,Working
+https://muhammadprojects.com/chain-mortgage/,Working
+https://muhammadprojects.com/cloudkeep/,Working
+https://muhammadprojects.com/crescent-trading/,Working
+https://muhammadprojects.com/democratic-school/,Working
+https://muhammadprojects.com/ensemble,Working
+https://muhammadprojects.com/gardening/,Working
+https://muhammadprojects.com/green-gardeners,Working
+https://muhammadprojects.com/industrial-environmental/,Working
+https://muhammadprojects.com/jodi-picoult/,Working
+https://muhammadprojects.com/law-order/,Working
+https://muhammadprojects.com/lift-aviation/,Working
+https://muhammadprojects.com/maineri-law-firm/,Working
+https://muhammadprojects.com/moore-exotics/,Working
+https://muhammadprojects.com/muscle-magic/,Working
+https://muhammadprojects.com/myopia-control/,Working
+https://muhammadprojects.com/nazeli/,Working
+https://muhammadprojects.com/photography/,Working
+https://muhammadprojects.com/plumbing-company/,Working
+https://muhammadprojects.com/pride-general/,Working
+https://muhammadprojects.com/san-diego/,Working
+https://muhammadprojects.com/startosphere-v2/,Working
+https://muhammadprojects.com/startosphere-v3/,Working
+https://muhammadprojects.com/sweet-treat-temptations/,Working
+https://muhammadprojects.com/telepathy-academy/,Working
+https://muhammadprojects.com/torch/,Working
+https://muhammadprojects.com/turbo-plumbing/,Working
+https://muhammadprojects.com/wartime,Working
+https://muhammadprojects.com/west-coast/,Working
+https://muhammadprojects.com/william-thomas/,Working
+https://muhammadprojects.com/zdapt,Working
+https://clients.muhammadprojects.com/portfolio/,Working
+https://clients.muhammadprojects.com/tech-color/,Error 500
+https://clients.muhammadprojects.com/intern/,Error 500
+https://clients.muhammadprojects.com/voyage-v2/,Error 500
+https://clients.muhammadprojects.com/charles/,Error 500
+https://clients.muhammadprojects.com/oz-vacations/,Error 500
+https://clients.muhammadprojects.com/hurghada/,Error 500
+https://clients.muhammadprojects.com/mylres/,Error 500
+https://clients.muhammadprojects.com/INKY-BLACKNESS,Error 500
+https://clients.muhammadprojects.com/elcpa,Error 500
+https://clients.muhammadprojects.com/diystair/,Error 500
+https://clients.muhammadprojects.com/loan-simple/,Error 500
+https://clients.muhammadprojects.com/onpoint/,Error 500
+https://clients.muhammadprojects.com/cdp-law/,Error 500
+https://clients.muhammadprojects.com/legend/,Error 500
+https://clients.muhammadprojects.com/dukerei/,Error 500
+https://clients.muhammadprojects.com/triton/,Working
+https://clients.muhammadprojects.com/usb-busa/,Error 500
+https://clients.muhammadprojects.com/swyft/,Error 500
+https://clients.muhammadprojects.com/neuroplate/,Error 500
+https://clients.muhammadprojects.com/valence-chems/,Error 500
+https://clients.muhammadprojects.com/uhler-management,Error 500
+https://clients.muhammadprojects.com/precision-valuation/,Error 500
+https://clients.muhammadprojects.com/tima-journal/,Error 500
+https://www.teccolorcraft.com/,Working
+https://colourpop.com/,Working
+https://www.kingice.com/,Working
+https://forum33.surge.sh/,Working
+https://swamfestva.org/,Working
+https://www.katesnussman.com/,Working
+https://amplifycapgroup.com/,Working
+https://saundersroofing.com/,Working
+https://arpsurveyors.com.au/,Working
+https://www.ochealthysmiles.com/,Working
+https://theater.academy/beta/,Working
+https://unec.co/,Working
+https://bhisciences.com/,Working
+https://www.baitutihome.com/,Working
+https://www.darrenmain.com/,Working
+http://fabriclifemiami.com/,Working
+https://elegantlogoin30mins.com/elegntlogin/,"Not Working (HTTPSConnectionPool(host='elegantlogoin30mins.com', port=443): Max retries exceeded with url: /elegntlogin/ (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A06C740>: Failed to resolve 'elegantlogoin30mins.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://pixperfekt.com/pixadminlogin,Error 404
+http://hanyanurcollections.com/,Working
+http://usaipattorneys.com/,"Not Working (HTTPConnectionPool(host='usaipattorneys.com', port=80): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPConnection object at 0x000001A11A098E30>: Failed to resolve 'usaipattorneys.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://dotroxdesign.com/,Working
+https://portfolio.dotroxdesign.com/,"Not Working (HTTPSConnectionPool(host='portfolio.dotroxdesign.com', port=443): Max retries exceeded with url: / (Caused by NameResolutionError(""<urllib3.connection.HTTPSConnection object at 0x000001A11A098B30>: Failed to resolve 'portfolio.dotroxdesign.com' ([Errno 11001] getaddrinfo failed)"")))"
+https://voxadesign.com/voxadsgnlogin,Error 404
+https://portfolio.voxadesign.com/,Working
+https://insitechstaging.com/our-case-studies/,Working
+https://designoflex.com/design0flexlogin/,Error 404
+https://ayeshaprojects.designoflex.com/,Working
+https://portfolio.designoflex.com/,Working
+https://techdigitron.com/,Working
+https://insitech.pk/,Working
+https://creasions.com/login_cresn,Error 500
+https://creativedge.me/wp-admin/,Working
+https://insiinternational.com/,Working
+https://livingstonoutdoorblinds.com.au/lp,Working
+https://www.muhammadprojects.com/democratic-school/,Working
+https://www.muhammadprojects.com/green-gardeners/,Working
+https://muhammadprojects.com/altumsolutions/,Working
+https://muhammadprojects.com/zdapt/,Working

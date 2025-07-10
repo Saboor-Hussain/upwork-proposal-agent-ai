@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+.env*
+
+# Jupyter
+*.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# Data & Output
+#*.csv
+#*.xlsx
+#*.xls
+#*.pkl
+*.log
+*.db
+*.sqlite
+*.sqlite3
+
+# Streamlit
+.streamlit/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+venv/
+.env/
+
+# Misc
+*.bak
+*.swp
+*.tmp
+
+# Ignore proposal output files
+#proposal-analysis.*
+#proposal-analysics.*
+
+# Ignore jobs data
+#/data/jobs_data.csv
+
+# Ignore embeddings
+#/embeddings/

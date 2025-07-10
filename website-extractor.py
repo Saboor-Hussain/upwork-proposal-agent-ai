@@ -1,0 +1,564 @@
+import requests
+import trafilatura
+from openai import OpenAI
+import pandas as pd
+import time
+import os
+import json
+import subprocess
+import re
+
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+client = OpenAI(api_key=OPENAI_API_KEY)
+
+CATEGORY_CONTEXT = """
+    Health & Wellness: PersonalTraining, Yoga, Nutritionists, MentalHealth, BodyandMindRebalance, FitnessTraining, Boxing, PhysicalGaming, HealthPerformance, LifestyleHealth
+    Medical Services: Dentist, Therapist, Consultant, MassageSpecialist, MedicalGroupClinic(In-HouseLab, VirtualConsultation, DiabetesClinic), Medicine&InfectiousDiseaseServices, BackPain, Orthopedic, SpinalCord, CovidRapidTest(TestKit, Self-Test), DentalITSupport
+    Real Estate: PropertyManagement, BuyandSell, Investments, PropertyListing, PricingCalculator, HomeBuyingandSelling, RealEstateDevelopment(Construction, Financing, Operations, Management), BusinessBuy&Sell, BusinessBroker
+    E-commerce: CampingGears, BarberProducts, Jewelry(Earrings, Piercing), Apparel, GymWear, AthleticWear, Books, OnlineFoodStore, Cakes&Desserts(OrderOnline), Salon&SPA, MedicalSupplements, WooCommerce
+    Solar Energy: SolarPanels, SolarSolutions, AuditEnergy, SolarInstallation, RequestaQuote
+    Business Services: BusinessConsultancy, BusinessAdvisor, FinancialBlog, BusinessSolutions, ITConsultant, ProfessionalDevelopment, TaxAdvisoryforDentists, BusinessFundings, FinancialFreedom, BusinessLoans
+    Financial Services: Loan, CapitalSolutions, FarmerFinancing&Insurance, HomeLoan, Mortgage, MortgageCalculator, InvestmentCompany, Crypto(MoneyMarket, DigitalCurrency), VentureCapital
+    Legal Services: LawFirm, DivorceLawyer, InjuryLawyer(AutoInjury), AccidentalCoverage, Settlements, LegalConsultation
+    Digital Agency: DigitalMarketing, SEO, PPC, YouTubeMonetization, ContentMonetization
+    Transportation & Logistics: RentACar, LuxuryTransport, CourierServices, FreightServices, Logistics, VehicleRental(Vans&SUVs), AutoTowing, MaritimeLogistics(ShippingAgency, ShipContainers)
+    Cleaning Services: GutterCleaning, DuctCleaning, WindowCleaning, SewerageCleaning, CarWash, GeneralCleaning
+    Construction & Home Services: Construction, StairsInstallation, MetalFabrication, Roofing, Plumbing, ElectricalSolutions, HomeAutomation, OfficeAutomation, HomeStaging, HomeDecor
+    Education & Learning: LanguageEducation(Bilingual, GiftingFunctionality), LearningPlatform(App, Webinars), CosmetologyInstitute(Skincare, SalonCourses), Schooling, LearningVariances(Dyslexia, ADHD, Speech)
+    Non-Profit & NGO: MentalHealthAwareness, EducationFunding, SoldierSupport, Donations, SeniorCare, JobCreation, DogNGO
+    Travel & Tourism: VacationServices, Tour&Tourism, OnlineBooking, VacationRentals
+    Creative & Media: Photography, Creagraphy, ArtTeaching, MusicStudios, MusicArtists, ScreenPrinting, Embroidery, CustomPrinting, FashionArticles
+    Technology & IT: DataOrganization, AIChatBot, PersonalAssistant, CloudComputing, TechServices, VPN, VPS, ITSolutions
+    Gaming: OnlineGamingCoaching, FitnessGaming(Boxing, Physical)
+    Food & Hospitality: Restaurant(Booking, Catering), ItalianKitchen(Order, Reservation), Steaks, CateringServices
+    Pet Care: PetSitting, DogCare, AnimalCare(Signup)
+    Manufacturing & Industrial: Manufacturing(Materials, Scaffolding), EnvironmentalIndustrial, Engineering
+    Retail & Specialty: VendingMachines, JewelryStores
+    Event Planning: WeddingPlanning, EventManagement
+    Career & Recruitment: RecruitmentAgency, ResumeServices, CareerCounseling, Coaching
+    Sports & Recreation: TennisCourts, Baseball
+    Aviation: AviationCompany
+    Space & Science: SpaceWeatherAnalysis, SpaceResearch
+    Fashion & Beauty: FashionEthics, Salon&SPA, Cosmetology
+    Online Services: SocialNetworkLandingPage, Translation, Proofreading, Transcription, ContentRemovalServices
+    NFT & Blockchain: NFT, NFTTrading
+    Society & Community: PalmTreeSociety, CommunityPropertyManagement
+    Marketing & Advertising: AmazonCampaigns, LeadGeneration, HubSpot
+    Other: Assign the Category according to the website's main focus or service.
+"""
+
+# Input: List of website links
+website_links = [
+    "http://4metaenergy.com/",
+    "https://abstract-ai.com/",
+    "https://bizcoconsultancy.com/",      
+    "https://esporter.win/home-2/",       
+    "https://godavisfreight.com/",        
+    "https://harkhunter.com/",
+    "https://innovativesolutionsllc.com/",
+    "https://insitech.ae/",
+    "https://legacydevelopments.ky/",     
+    "https://munchiezmiamivending.com/",  
+    "https://mylres.com/",
+    "https://myprimarycleaning.com/",     
+    "https://ngentech.net/",
+    "https://offerock.com/",
+    "https://prestigepet-sitting.net/",   
+    "https://sequoiatherapy.com/",        
+    "https://smallthingspetsitting.com/", 
+    "https://stvaonline.com/",
+    "https://teachlearnlead.net/",        
+    "https://teampuggi.com/",
+    "https://tencowtees.com/",
+    "https://tritonsoundresidential.com/",
+    "https://urbanhealthgroupinc.org/",   
+    "https://viridia.ky/",
+    "https://www.advancedxl.com/",
+    "https://www.drmsusa.com/",
+    "https://zenergyhp.com/bossladyhealth/",
+    "https://jegnite.com/",
+    "https://freetenniscourts.com/",
+    "https://www.trianglesmartdivorce.com/",
+    "https://hurghada.com/",
+    "https://geraldinegarcia.net/",
+    "https://teccolorcraft.com/",
+    "https://subject2.com/",
+    "https://dadrainfellas.com/",
+    "https://amplifywash.com/",
+    "https://lservicesthecompany.com/",
+    "https://designoflex.com/",
+    "https://esporter.win/landing-page/#",
+    "https://blackcedarinvestments.com/",
+    "https://aspectstaging.com/",
+    "https://simonbroslabs.com/",
+    "https://thevalemagazine.com/",
+    "https://maloneyinjurylawfirm.com/",
+    "https://dallasmdassociates.com/",
+    "https://www.threefarmfinancial.com/",
+    "https://crescent-trading.com/",
+    "https://nypifirm.com/",
+    "https://www.legendnt.com/",
+    "https://www.toons-ville.com/",
+    "https://commercialplus.com/",
+    "https://koyathletic.com/",
+    "https://pharmadrug.ca/",
+    "https://www.clairmontcg.com/",
+    "https://elcpa.com/",
+    "https://namg.us/",
+    "https://www.ochealthysmiles.com/landing-page-2/",
+    "https://senoa.io/",
+    "https://www.muhammadprojects.com/lift-aviation/",
+    "https://muhammadprojects.com/donation-nation/",
+    "https://www.muhammadprojects.com/jill-baker/",
+    "https://gentrycleanersinc.com/",
+    "https://muhammadprojects.com/rob-kaufman/",
+    "https://muhammadprojects.com/pita-street-food/",
+    "https://www.muhammadprojects.com/startosphere-v2/",
+    "https://www.muhammadprojects.com/torch/",
+    "https://muhammadprojects.com/steak-for-breakfast/",
+    "https://muhammadprojects.com/wartime/",
+    "https://muhammadprojects.com/sea-glass/",
+    "https://www.muhammadprojects.com/william-thomas/",
+    "https://www.muhammadprojects.com/florentine-jewelry/",
+    "https://muhammadprojects.com/ensemble/",
+    "https://www.muhammadprojects.com/law-order/",
+    "https://www.muhammadprojects.com/maineri-law-firm/",
+    "https://www.muhammadprojects.com/myopia-control/",
+    "https://muhammadprojects.com/jack-rose/",
+    "https://www.muhammadprojects.com/calico-music/",
+    "https://muhammadprojects.com/altumsolutions",
+    "https://www.muhammadprojects.com/industrial-environmental/",
+    "https://www.muhammadprojects.com/democratic-school/",
+    "https://muhammadprojects.com/muscle-magic/#",
+    "https://www.muhammadprojects.com/startosphere-v3/",
+    "https://muhammadprojects.com/rip-city/",
+    "https://muhammadprojects.com/enchanted/",
+    "https://insitechstaging.com/demo/pavilion/",
+    "https://insitechstaging.com/demo/pro-auto-towing/",
+    "https://clients.muhammadprojects.com/insitechv3/",
+    "https://clients.muhammadprojects.com/insitechv2/",
+    "https://clients.muhammadprojects.com/theodore/",
+    "https://clients.muhammadprojects.com/detore/",
+    "https://clients.muhammadprojects.com/toons-ville/",
+    "https://clients.muhammadprojects.com/insitechv1/",
+    "https://clients.muhammadprojects.com/northern-arizona/",
+    "https://beauty-salon-react.surge.sh/",
+    "https://muhammadprojects.com/beauty-salon/",
+    "https://www.vitalityskin.com.au/",
+    "https://insitechstaging.com/demo/stylist-factory/wp/",
+    "https://portfolio.muhammadprojects.com/kultureinstitue/",
+    "https://mybeautysite.com/",
+    "https://muhammadprojects.com/rhythm-experts/",
+    "https://portfolio.muhammadprojects.com/INKY-BLACKNESS/",
+    "https://portfolio.muhammadprojects.com/apekshya/",
+    "https://desertknightpainting.com/",
+    "https://portfolio.muhammadprojects.com/tima-journal",
+    "https://muhammadprojects.com/BrushWolfClothing/",
+    "https://hanyanurcollections.com/",
+    "https://portfolio.muhammadprojects.com/duro-athletics/",
+    "https://wilsoncommunityoutreach.org/",
+    "https://chef-monkey.com/",
+    "https://portfolio.muhammadprojects.com/thefrgn/",
+    "https://chiheirluums.com/",
+    "https://www.muhammadprojects.com/jodi-picoult/",
+    "https://insitechstaging.com/demo/atf-contracting/",
+    "https://insitechstaging.com/demo/art-of-marbles",
+    "https://insitechstaging.com/demo/brochure-design/",
+    "https://insitechstaging.com/demo/financial-literacy",
+    "https://insitechstaging.com/demo/getting-sheared/wp-admin/",
+    "https://insitechstaging.com/demo/greatwork-logistics/",
+    "https://insitechstaging.com/demo/luckybackyard/customwp/",
+    "https://insitechstaging.com/demo/badboystrain/",
+    "https://insitechstaging.com/demo/barefoot-xpress",
+    "https://insitechstaging.com/demo/weapon-retention/",
+    "https://insitechstaging.com/demo/westminsterparty",
+    "https://insitechstaging.com/demo/boiling-wit/",
+    "https://insitechstaging.com/demo/bromley-collision",
+    "https://insitechstaging.com/demo/calgary-markets/wp-admin/",
+    "https://insitechstaging.com/demo/charles-clark",
+    "https://insitechstaging.com/demo/children-band/",
+    "https://insitechstaging.com/demo/cupsmx/",
+    "https://insitechstaging.com/demo/dakam/",
+    "https://insitechstaging.com/demo/DL-Tax-solution/",
+    "https://insitechstaging.com/demo/dropshipping/wp/",
+    "https://insitechstaging.com/demo/evergreen",
+    "https://insitechstaging.com/demo/lucky-old/",
+    "https://insitechstaging.com/demo/soldier-mountain-highland/",
+    "https://insitechstaging.com/demo/spectrum-group",
+    "https://insitechstaging.com/demo/sustainatech/",
+    "https://insitechstaging.com/demo/transportation-trend-setter/",
+    "https://insitechstaging.com/demo/jounrey/",
+    "https://insitechstaging.com/demo/kadobu",
+    "https://insitechstaging.com/demo/iron-gate",
+    "https://insitechstaging.com/demo/martialartsinthepark/",
+    "https://insitechstaging.com/demo/monsoon-security/",
+    "https://insitechstaging.com/demo/price-refractory/",
+    "https://insitechstaging.com/demo/stylist-factory/wp/wp-admin/",
+    "https://insitechstaging.com/demo/zee-media/",
+    "https://insitechstaging.com/demo/lazzat",
+    "https://insitechstaging.com/demo/philanthrocapitalistreview",
+    "https://insitechstaging.com/demo/vaultofbeauty",
+    "https://insitechstaging.com/demo/voxa-marketing/wp/",
+    "https://insitechstaging.com/demo/jeff-macgrandles/",
+    "https://insitechstaging.com/demo/contour-cabinets/",
+    "https://insitechstaging.com/demo/jonathan/",
+    "https://insitechstaging.com/demo/limitless-equine",
+    "https://insitechstaging.com/demo/weight-pullers/",
+    "https://insitechstaging.com/demo/conte-stanley/",
+    "https://insitechstaging.com/demo/eric-scott/",
+    "https://insitechstaging.com/demo/alberto-herrera/",
+    "https://insitechstaging.com/demo/kerry-kinard/",
+    "https://insitechstaging.com/demo/gary-yancy/",
+    "https://insitechstaging.com/demo/organx/",
+    "https://insitechstaging.com/demo/titans/",
+    "https://insitechstaging.com/demo/steve-grinding/",
+    "https://insitechstaging.com/demo/tnt-services/",
+    "https://insitechstaging.com/demo/rgc-groove/",
+    "https://insitechstaging.com/demo/circo-circus-funland/",
+    "https://insitechstaging.com/demo/four-sight/",
+    "https://insitechstaging.com/demo/rthompson/",
+    "https://insitechstaging.com/demo/brand-02",
+    "https://insitechstaging.com/demo/calender/",
+    "https://insitechstaging.com/demo/wyatt-johnson/",
+    "https://insitechstaging.com/demo/noir-moolah/",
+    "https://insitechstaging.com/demo/james-veon/",
+    "https://insitechstaging.com/demo/triple-star/",
+    "https://insitechstaging.com/demo/ferno/",
+    "https://insitechstaging.com/demo/zachary-farrow/",
+    "https://insitechstaging.com/demo/terra-nova/",
+    "https://insitechstaging.com/demo/AM-auto-body",
+    "https://insitechstaging.com/demo/travel-agency",
+    "https://insitechstaging.com/demo/relocate-travel",
+    "https://insitechstaging.com/demo/cruise-landing/",
+    "https://insitechstaging.com/demo/twb-company/",
+    "https://portfolio.muhammadprojects.com/empowercareinsurance/",
+    "https://portfolio.muhammadprojects.com/civic-ai/",
+    "https://portfolio.muhammadprojects.com/yancyswingznthingz/",
+    "https://portfolio.muhammadprojects.com/legacy/",
+    "https://portfolio.muhammadprojects.com/give-back-solar/",
+    "https://portfolio.muhammadprojects.com/tech-color",
+    "https://portfolio.muhammadprojects.com/intern/",
+    "https://portfolio.muhammadprojects.com/da-drain-fellas/",
+    "https://portfolio.muhammadprojects.com/toons-ville/",
+    "https://portfolio.muhammadprojects.com/paramount/",
+    "https://portfolio.muhammadprojects.com/free-tennis-courts/",
+    "https://portfolio.muhammadprojects.com/fantopia/",
+    "https://portfolio.muhammadprojects.com/voyage-v2/",
+    "https://portfolio.muhammadprojects.com/great-plain/",
+    "https://portfolio.muhammadprojects.com/handyman/",
+    "https://portfolio.muhammadprojects.com/charles/",
+    "https://portfolio.muhammadprojects.com/clairmont/",
+    "https://portfolio.muhammadprojects.com/content-spectum/",
+    "https://portfolio.muhammadprojects.com/betterhome3/",
+    "https://portfolio.muhammadprojects.com/functional-remedies/",
+    "https://portfolio.muhammadprojects.com/invicta-consulting/",
+    "https://portfolio.muhammadprojects.com/la-development/",
+    "https://portfolio.muhammadprojects.com/oz-vacations/",
+    "https://portfolio.muhammadprojects.com/hurghada/",
+    "https://portfolio.muhammadprojects.com/mylres/",
+    "https://portfolio.muhammadprojects.com/allseason-digital/",
+    "https://portfolio.muhammadprojects.com/adwerx/",
+    "https://portfolio.muhammadprojects.com/dnd3/",
+    "https://portfolio.muhammadprojects.com/gentry-cleaner/",
+    "https://portfolio.muhammadprojects.com/recovery-roofing/",
+    "https://portfolio.muhammadprojects.com/cdp-law-coming/",
+    "https://portfolio.muhammadprojects.com/diystair/",
+    "https://portfolio.muhammadprojects.com/janover-2/",
+    "https://portfolio.muhammadprojects.com/greenwayv1/",
+    "https://portfolio.muhammadprojects.com/clutch/",
+    "https://portfolio.muhammadprojects.com/scrub-perfect/",
+    "https://portfolio.muhammadprojects.com/animal-damage-control/",
+    "https://portfolio.muhammadprojects.com/esporter/",
+    "https://portfolio.muhammadprojects.com/greenlight-solar/",
+    "https://portfolio.muhammadprojects.com/loan-simple/",
+    "https://portfolio.muhammadprojects.com/casaconnect/",
+    "https://portfolio.muhammadprojects.com/Franchise-Rockstars/",
+    "https://portfolio.muhammadprojects.com/onpoint/",
+    "https://portfolio.muhammadprojects.com/cdp-law/",
+    "https://portfolio.muhammadprojects.com/legend/",
+    "https://portfolio.muhammadprojects.com/dukerei/",
+    "https://portfolio.muhammadprojects.com/sea-of-strength/",
+    "https://portfolio.muhammadprojects.com/triton/",
+    "https://portfolio.muhammadprojects.com/click/",
+    "https://portfolio.muhammadprojects.com/ibercia/",
+    "https://portfolio.muhammadprojects.com/detore",
+    "https://portfolio.muhammadprojects.com/molinos",
+    "https://portfolio.muhammadprojects.com/wilsoncommunityoutreach/",
+    "https://portfolio.muhammadprojects.com/missionequitycapital/",
+    "https://portfolio.muhammadprojects.com/mobilemodality/",
+    "https://portfolio.muhammadprojects.com/chiheirluums/",
+    "https://portfolio.muhammadprojects.com/gf-usa",
+    "https://portfolio.muhammadprojects.com/chef-monkey/",
+    "https://portfolio.muhammadprojects.com/back-pain/",
+    "https://portfolio.muhammadprojects.com/kultureinstitue",
+    "https://portfolio.muhammadprojects.com/crescent-rides/",
+    "https://portfolio.muhammadprojects.com/harley-reed/",
+    "https://portfolio.muhammadprojects.com/usb-busa/",
+    "https://portfolio.muhammadprojects.com/vitalityskin/",
+    "https://portfolio.muhammadprojects.com/super-reccruiter/",
+    "https://portfolio.muhammadprojects.com/swyft/",
+    "https://portfolio.muhammadprojects.com/neuroplate/",
+    "https://portfolio.muhammadprojects.com/valence-chems/",
+    "https://portfolio.muhammadprojects.com/uhler-management/",
+    "https://portfolio.muhammadprojects.com/precision-valuation/",
+    "https://portfolio.muhammadprojects.com/tima-journal/",
+    "https://portfolio.muhammadprojects.com/vaxa-property-management/",
+    "https://portfolio.muhammadprojects.com/preppylittlemissy",
+    "https://portfolio.muhammadprojects.com/gutter-guys/",
+    "https://portfolio.muhammadprojects.com/the-business-sherpas/",
+    "https://portfolio.muhammadprojects.com/bounce-studio/",
+    "https://portfolio.muhammadprojects.com/injury-law-firm",
+    "https://portfolio.muhammadprojects.com/injury-lawyer/",
+    "https://portfolio.muhammadprojects.com/shuckfamilyplumbing/",
+    "https://portfolio.muhammadprojects.com/pavilion/",
+    "https://portfolio.muhammadprojects.com/saqib-filling-station/",
+    "https://portfolio.muhammadprojects.com/dfop/",
+    "https://portfolio.muhammadprojects.com/csfcompany/",
+    "https://portfolio.muhammadprojects.com/bromley-collision/",
+    "https://portfolio.muhammadprojects.com/masea-house/",
+    "https://portfolio.muhammadprojects.com/getting-sheared/",
+    "https://portfolio.muhammadprojects.com/desert-knight-painting/",
+    "https://portfolio.muhammadprojects.com/gamegain/",
+    "https://portfolio.muhammadprojects.com/cadavid-solutions/",
+    "https://portfolio.muhammadprojects.com/ancile-group/",
+    "https://portfolio.muhammadprojects.com/archangelsafetyllc/",
+    "https://portfolio.muhammadprojects.com/almaraz-tree-service/",
+    "https://portfolio.muhammadprojects.com/AM-auto-body/",
+    "https://portfolio.muhammadprojects.com/nala-enterprises/",
+    "https://portfolio.muhammadprojects.com/drink-n-spin/",
+    "https://portfolio.muhammadprojects.com/fabric-life-miami/",
+    "https://portfolio.muhammadprojects.com/sustainatech/",
+    "https://portfolio.muhammadprojects.com/lehigh-valleymovers/",
+    "https://portfolio.muhammadprojects.com/corey-roehl/",
+    "https://portfolio.muhammadprojects.com/pacificsfinestconstructioninc/",
+    "https://portfolio.muhammadprojects.com/ingress-dubai-restaurant/",
+    "https://portfolio.muhammadprojects.com/foursight/",
+    "https://portfolio.muhammadprojects.com/diablovpn/",
+    "https://clients.muhammadprojects.com/new-muhammad/",
+    "https://clients.muhammadprojects.com/portfolio/portfollogin",
+    "https://clients.muhammadprojects.com/handyman/",
+    "https://clients.muhammadprojects.com/betterhome3/",
+    "https://clients.muhammadprojects.com/functional-remedies/",
+    "https://clients.muhammadprojects.com/brand-insitech/",
+    "https://clients.muhammadprojects.com/cdp-law-coming/",
+    "https://clients.muhammadprojects.com/janover-2/",
+    "https://clients.muhammadprojects.com/beauty-salon-v2/",
+    "https://clients.muhammadprojects.com/animal-damage-control/",
+    "https://clients.muhammadprojects.com/greenlight-solar/",
+    "https://clients.muhammadprojects.com/Franchise-Rockstars/",
+    "https://clients.muhammadprojects.com/roy-swanson/",
+    "https://clients.muhammadprojects.com/split-slab/",
+    "https://clients.muhammadprojects.com/pointerrs/",
+    "https://clients.muhammadprojects.com/county-agency/login.php",
+    "https://clients.muhammadprojects.com/beauty-site/",
+    "https://clients.muhammadprojects.com/NYSP/",
+    "https://clients.muhammadprojects.com/senoa/",
+    "https://clients.muhammadprojects.com/healthy-shoes/",
+    "https://clients.muhammadprojects.com/voxa-web/",
+    "https://jmkwoodcreations.com/",
+    "https://cadavidsolutionsltd.com/",
+    "https://nalaenterprises.com/",
+    "https://overeasyhospitality.info/",
+    "https://pacificsfinestconstructioninc.com/",
+    "https://sustainatech.co.uk/",
+    "https://yancyswingznthingz.com/",
+    "https://gf-usa.org/",
+    "https://empowercareinsurance.com/",
+    "https://raleighgradgrooves.com/",
+    "http://northidahofirearms.com/",
+    "https://safeshipping.us/",
+    "https://circocircusfunland.com/",
+    "https://contourcabinetsrta.com/",
+    "https://choloblanco.com/",
+    "https://muhammadprojects.com/butler-mcdonald/",
+    "https://muhammadprojects.com/calico-music/",
+    "https://muhammadprojects.com/canadian-joist/",
+    "https://muhammadprojects.com/donation-nation",
+    "https://muhammadprojects.com/enchanted",
+    "https://muhammadprojects.com/florentine-jewelry",
+    "https://muhammadprojects.com/immune-central/",
+    "https://muhammadprojects.com/jill-baker/",
+    "https://muhammadprojects.com/alasca-tours/",
+    "https://muhammadprojects.com/allied-extract/",
+    "https://muhammadprojects.com/Blue-mermaid-restaurant/",
+    "https://muhammadprojects.com/chain-mortgage/",
+    "https://muhammadprojects.com/cloudkeep/",
+    "https://muhammadprojects.com/crescent-trading/",
+    "https://muhammadprojects.com/democratic-school/",
+    "https://muhammadprojects.com/ensemble",
+    "https://muhammadprojects.com/gardening/",
+    "https://muhammadprojects.com/green-gardeners",
+    "https://muhammadprojects.com/industrial-environmental/",
+    "https://muhammadprojects.com/jodi-picoult/",
+    "https://muhammadprojects.com/law-order/",
+    "https://muhammadprojects.com/lift-aviation/",
+    "https://muhammadprojects.com/maineri-law-firm/",
+    "https://muhammadprojects.com/moore-exotics/",
+    "https://muhammadprojects.com/muscle-magic/",
+    "https://muhammadprojects.com/myopia-control/",
+    "https://muhammadprojects.com/nazeli/",
+    "https://muhammadprojects.com/photography/",
+    "https://muhammadprojects.com/plumbing-company/",
+    "https://muhammadprojects.com/pride-general/",
+    "https://muhammadprojects.com/san-diego/",
+    "https://muhammadprojects.com/startosphere-v2/",
+    "https://muhammadprojects.com/startosphere-v3/",
+    "https://muhammadprojects.com/sweet-treat-temptations/",
+    "https://muhammadprojects.com/telepathy-academy/",
+    "https://muhammadprojects.com/torch/",
+    "https://muhammadprojects.com/turbo-plumbing/",
+    "https://muhammadprojects.com/wartime",
+    "https://muhammadprojects.com/west-coast/",
+    "https://muhammadprojects.com/william-thomas/",
+    "https://muhammadprojects.com/zdapt",
+    "https://clients.muhammadprojects.com/portfolio/",
+    "https://clients.muhammadprojects.com/triton/",
+    "https://www.teccolorcraft.com/",
+    "https://colourpop.com/",
+    "https://www.kingice.com/",
+    "https://forum33.surge.sh/",
+    "https://swamfestva.org/",
+    "https://www.katesnussman.com/",
+    "https://amplifycapgroup.com/",
+    "https://saundersroofing.com/",
+    "https://arpsurveyors.com.au/",
+    "https://www.ochealthysmiles.com/",
+    "https://theater.academy/beta/",
+    "https://unec.co/",
+    "https://bhisciences.com/",
+    "https://www.baitutihome.com/",
+    "https://www.darrenmain.com/",
+    "http://fabriclifemiami.com/",
+    "http://hanyanurcollections.com/",
+    "https://dotroxdesign.com/",
+    "https://portfolio.voxadesign.com/",
+    "https://insitechstaging.com/our-case-studies/",
+    "https://ayeshaprojects.designoflex.com/",
+    "https://portfolio.designoflex.com/",
+    "https://techdigitron.com/",
+    "https://insitech.pk/",
+    "https://creativedge.me/wp-admin/",
+    "https://insiinternational.com/",
+    "https://livingstonoutdoorblinds.com.au/lp",
+    "https://www.muhammadprojects.com/democratic-school/",
+    "https://www.muhammadprojects.com/green-gardeners/",
+    "https://muhammadprojects.com/altumsolutions/",
+    "https://muhammadprojects.com/zdapt/",
+]
+
+def scrape_website(url):
+    try:
+        downloaded = trafilatura.fetch_url(url)
+        if downloaded:
+            return trafilatura.extract(downloaded)
+        else:
+            return ""
+    except Exception as e:
+        print(f"Error scraping {url}: {e}")
+        return ""
+
+def get_tech_stack(url):
+    command = "wsl whatweb " + url
+
+    try:
+        result = subprocess.getoutput(command)
+        return filter_tech_stack(result)
+    except Exception as e:
+        return f"Error: {e}"
+    
+def filter_tech_stack(output):
+    tech_keywords = [
+        'HTML5', 'HTML', 'CSS', 'JavaScript', 'WordPress', 'Wordpress', 'React', 'Elementor', 'jQuery', 'Jquery', 'PHP', 'Bootstrap', 'WooCommerce', 'Shopify', 'Node.js', 'Vue.js', 'Angular', 'MySQL', 'MongoDB', 'Laravel', 'Django', 'Flask', 'Squarespace', 'Wix', 'Drupal', 'Joomla', 'ASP.NET', 'Ruby on Rails', 'Express', 'Svelte', 'Next.js', 'Nuxt.js', 'Gatsby', 'Gridsome', 'PrestaShop', 'Magento', 'BigCommerce', 'Ghost', 'Blogger', 'Weebly', 'TypeScript', 'Tailwind', 'Tailwind CSS', 'Sass', 'Less', 'SCSS', 'Cloudflare', 'Nginx', 'Apache', 'LiteSpeed', 'Vercel', 'Netlify', 'Firebase', 'Heroku', 'DigitalOcean', 'AWS', 'Azure', 'Google Cloud'
+    ]
+    found = set()
+    for line in output.split(','):
+        for tech in tech_keywords:
+            if tech.lower() in line.lower():
+                found.add(tech)
+    return ', '.join(sorted(found))
+
+
+def analyze_content_with_gpt(content):
+    prompt = f"""
+You are an AI assistant that classifies websites based on their content.
+
+Given the full content of a website, perform the following:
+
+1. **Category**: Use the taxonomy below to assign the most relevant category. If no match is found, create a new one based on the website’s core focus.
+2. **Short Description**: 1–3 sentence summary of the website’s purpose.
+3. **Keywords**: List of keywords (comma-separated)
+
+### Category Taxonomy:
+{CATEGORY_CONTEXT}
+
+### Website Content:
+\"\"\"
+{content[:4000]}
+\"\"\"
+
+Return ONLY a JSON object with these keys: "category", "description", and "keywords".
+Make sure the output is valid JSON without any extra text.
+"""
+    
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.1
+        )
+        # print(f"OpenAI response: {response}")
+
+        output_text = response.choices[0].message.content.strip()
+
+        # Remove markdown code blocks (```json ... ```)
+        # This regex captures content inside triple backticks optionally with json
+        code_block_match = re.search(r"```json\s*(\{.*?\})\s*```", output_text, re.DOTALL)
+        if code_block_match:
+            json_str = code_block_match.group(1)
+        else:
+            # fallback if no code block found, try to parse whole output_text
+            json_str = output_text
+
+        return json.loads(json_str)
+    except Exception as e:
+        print(f"OpenAI error: {e}")
+        return {}
+
+# Results storage
+data = []
+total = len(website_links)
+for idx, link in enumerate(website_links, 1):
+    print(f"\nProgress {idx} of {total}")
+    print(f'Working on "{link}"')
+    content = scrape_website(link)
+    if not content:
+        print("No content found. Skipping...")
+        continue
+
+    print(f"Analyzing content with GPT...")
+    result = analyze_content_with_gpt(content)
+
+    if not result:
+        print("GPT returned empty or invalid response. Skipping...")
+        continue
+
+    print("Detecting tech stack with WhatWeb...")
+    actual_tech_stack = get_tech_stack(link)
+
+    data.append({
+        "Website Link": link,
+        "Category": result.get("category", ""),
+        "Description": result.get("description", ""),
+        "Keywords": result.get("keywords", ""),
+        "Tech Stack": actual_tech_stack
+    })
+
+    print(f"Completed {idx} of {total}. Category: {result.get('category', 'N/A')}, Tech Stack: {actual_tech_stack}")
+
+    print("\n\nWaiting for 3 seconds to avoid rate limits...\n\n")
+    time.sleep(3)
+
+# Save to CSV
+df = pd.DataFrame(data)
+df.to_csv("websites_metadata.csv", index=False)
+print("Done. Saved to websites_metadata.csv")
