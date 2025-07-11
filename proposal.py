@@ -120,6 +120,7 @@ def get_proposal_agent():
         tools=[portfolio_tool, upwork_portfolio_tool, figma_portfolio_tool],
         llm=llm,
         agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        handle_parsing_errors=True,
         verbose=False
     )
     return agent
@@ -254,14 +255,19 @@ PROPOSAL_RULES = '''
 Write a personalized Upwork proposal for the following job. Follow these rules:
 1. Start with a personalized greeting.
 2. Mention the job/niche context in the first line.
-3. Use the Upwork Portfolio Retriever tool to include 1–2 relevant Upwork Case Study links ONLY from the matching niche.
-4. Use the Portfolio Retriever tool to include 2–3 relevant portfolio links ONLY from the matching niche.
-5. If the job description includes "Figma" or "figma", use the Figma Portfolio Retriever tool. Mention, "This is the website we have designed and the prototype link is [prototype link]. This is what we have developed [website link]." Ensure the project name matches.
-6. If the job description does not include "Figma" or "figma", use the Figma Portfolio Retriever tool to include the Figma link of the relevant category design prototype.
+3. Use the Upwork Portfolio Retriever tool to include 1–2 relevant Upwork Case Study links ONLY from the matching niche. Only include the raw link, not markdown or titles.
+4. Use the Portfolio Retriever tool to include 2–3 relevant portfolio links ONLY from the matching niche. Only include the raw link, not markdown or titles. Format them as bullets:
+  • [raw link]
+  • [raw link]
+  • [raw link]
+  ...
+5. If the job description includes "Figma" or "figma", use the Figma Portfolio Retriever tool. Mention, "This is the website we have designed and the prototype link is [prototype link]. This is what we have developed [website link]." Ensure the project name matches. Only include the raw link, not markdown or titles.
+6. If the job description does not include "Figma" or "figma", use the Figma Portfolio Retriever tool to include the Figma link of the relevant category design prototype. Only include the raw link, not markdown or titles.
 7. Follow the Creasions writing style (calm, confident, helpful).
 8. Mention tech/tools if listed in the job.
 9. Give timeline or delivery estimate if possible.
 10. End with a CTA (e.g., let’s connect, would love to chat).
+11. Do NOT mention budget or pricing in the proposal text, even if present in the job description.
 '''
 
 
@@ -284,21 +290,19 @@ def write_proposal(job_text):
     Job: {job_text}
     Client's total spend: {data.get('spend', 'N/A')}
     Average hourly rate: {data.get('avg_hourly', 'N/A')}
-    Budget: {data.get('budget', 'N/A')} ({data.get('budget_type', 'N/A')})
     Niche-specific request: {data.get('niche', 'None found')}
     Selected Tone: Tone {tone_num} - {tone_name}=
-    Justification for tone: [The agent chose this tone because of the above data.]
     Instructions for Proposal Writing: {PROPOSAL_RULES}
     """
     prompt_template = PromptTemplate(
         input_variables=["thoughts"],
         template="""
-You are Muhammad Ibrahim, an expert Upwork freelancer and proposal writer agent.
+You are Muhammad, an expert Upwork freelancer and proposal writer agent.
 Below are your thoughts and observations for the provided job data:
 
 {thoughts}
 
-Write a highly relevant, tailored Upwork proposal for this job, using the selected tone and all available context. Start with a 1-2 line justification for your tone selection, then write the proposal.
+Write a highly relevant, tailored Upwork proposal for this job, using the selected tone and all available context. 
 """
     )
     user_prompt = prompt_template.format(thoughts=thoughts)
@@ -408,7 +412,8 @@ About the Client:
 
     print("\n--- Generating 3 proposals ---\n")
     proposal1 = write_proposal(job)
-    proposal2 = write_proposal(job)
-    proposal3 = write_proposal(job)
-    print("\n--- Selecting the best proposal ---\n")
-    select_best_proposal(job, proposal1, proposal2, proposal3)
+    print(proposal1)
+    # proposal2 = write_proposal(job)
+    # proposal3 = write_proposal(job)
+    # print("\n--- Selecting the best proposal ---\n")
+    # select_best_proposal(job, proposal1, proposal2, proposal3)

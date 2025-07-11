@@ -1,7 +1,7 @@
 import pandas as pd
 import time
 import re
-from proposal import write_proposal
+from proposal import write_proposal, select_best_proposal
 from langchain.callbacks import get_openai_callback
 import openpyxl
 
@@ -13,7 +13,6 @@ def extract_links(text, pattern):
 
 def extract_proposal_content(best_result):
     # If dict, try to get 'Content' or 'content' key, else fallback
-    
     proposal = ''
     if isinstance(best_result, dict):
         for k in ['Content', 'content', 'proposal', 'best_proposal']:
@@ -59,10 +58,15 @@ rows = []
 columns = ["Job", "Proposal", "Upwork Portfolio", "Websites link 1", "Websites link 2", "Websites link 3", "Figma Link", "Total Tokens"]
 for idx, job_text in enumerate(jobs, 1):
     print(f"Processing {idx} out of {total_rows}.")
+    proposals = []
     total_tokens = 0
     with get_openai_callback() as cb:
-        proposal_text = write_proposal(job_text)
+        for _ in range(3):
+            proposal = write_proposal(job_text)
+            proposals.append(proposal)
         total_tokens += cb.total_tokens
+    best_result = select_best_proposal(job_text, proposals[0], proposals[1], proposals[2])
+    proposal_text = extract_proposal_content(best_result)
     upwork_portfolio, website_links, figma_link = extract_specific_links(proposal_text)
     row_out = [
         job_text,
@@ -78,10 +82,6 @@ for idx, job_text in enumerate(jobs, 1):
     # Write/update Excel after each row
     pd.DataFrame(rows, columns=columns).to_excel(output_file, index=False)
     print(f"Row written for job: {job_text[:40]}...")
-    time.sleep(2)
-    print(f"Total tokens used so far: {total_tokens}")
-    print("\n\nWaiting for 15 seconds before processing the next job...")
-    time.sleep(15)
-    print("\n\n\n")
+    time.sleep(10)
 
 print(f"Results saved to {output_file}")

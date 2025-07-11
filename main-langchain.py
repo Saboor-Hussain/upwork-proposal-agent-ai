@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 EMBEDDINGS_FILE = './embeddings/website_embeddings_1.pkl'
 UPWORK_EMBEDDINGS_FILE = './embeddings/upwork_embeddings.pkl'
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', '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')
+OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 
 def load_embeddings():
     with open(EMBEDDINGS_FILE, 'rb') as f:
