@@ -8,6 +8,7 @@ from sentence_transformers import SentenceTransformer
 import pickle
 import numpy as np
 from langchain.prompts import PromptTemplate
+from upwork_data import MY_DATA
 
 load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
@@ -268,6 +269,32 @@ Write a personalized Upwork proposal for the following job. Follow these rules:
 9. Give timeline or delivery estimate if possible.
 10. End with a CTA (e.g., let’s connect, would love to chat).
 11. Do NOT mention budget or pricing in the proposal text, even if present in the job description.
+12. Do not add any extra line before or after the proposal text.
+'''
+
+
+Best_Portfolio = '''
+Designs:
+• https://www.creasions.com/portfolio/website-design-1
+• https://www.creasions.com/portfolio/website-design-2
+• https://www.creasions.com/portfolio/website-design-3
+
+
+Development:
+• https://www.creasions.com/portfolio/website-development-1
+• https://www.creasions.com/portfolio/website-development-2
+• https://www.creasions.com/portfolio/website-development-3
+
+UI/UX or Figma Prototypes:
+• https://www.figma.com/proto/1234567890abcdef/Project-Name?node-id=1%3A2
+• https://www.figma.com/proto/abcdef1234567890/Another-Project?node-id=3%3A4
+• https://www.figma.com/proto/0987654321fedcba/Third
+
+Upwork Case Studies:
+• https://www.upwork.com/case-study/1234567890abcdef
+• https://www.upwork.com/case-study/abcdef1234567890
+
+
 '''
 
 
@@ -284,15 +311,31 @@ def write_proposal(job_text):
     print(f"Selected Tone: Tone {tone_num} - {tone_name}")
     print("\n" + "="*50 + " END OF EXTRACTED DATA AND SELECTED TONE " + "="*50 + "\n\n\n")
 
-
     agent = get_proposal_agent()
+    # Use LLM to generate a personalized intro based on MY_DATA and job_text
+    llm = ChatOpenAI(model="gpt-4.1-nano", api_key=OPENAI_API_KEY)
+    intro_prompt = f"""
+Using the following personal data, write a short, single-line personalized intro for an Upwork proposal. The intro should highlight why Muhammad is suitable for the job described below, referencing relevant experience, skills, and achievements from MY_DATA. Be specific to the job context.
+
+MY_DATA:
+{MY_DATA}
+
+Job Description:
+{job_text}
+
+Intro:
+"""
+    my_intro = llm([HumanMessage(content=intro_prompt)]).content.strip()
     thoughts = f"""
+    {my_intro}
     Job: {job_text}
     Client's total spend: {data.get('spend', 'N/A')}
     Average hourly rate: {data.get('avg_hourly', 'N/A')}
     Niche-specific request: {data.get('niche', 'None found')}
-    Selected Tone: Tone {tone_num} - {tone_name}=
+    Selected Tone: Tone {tone_num} - {tone_name}
     Instructions for Proposal Writing: {PROPOSAL_RULES}
+    Best Portfolio Links (for reference):\n{Best_Portfolio}\n
+    MY_DATA (for reference):\n{MY_DATA}\n
     """
     prompt_template = PromptTemplate(
         input_variables=["thoughts"],
@@ -305,6 +348,7 @@ Below are your thoughts and observations for the provided job data:
 Write a highly relevant, tailored Upwork proposal for this job, using the selected tone and all available context. 
 """
     )
+
     user_prompt = prompt_template.format(thoughts=thoughts)
     print("Extracted Data:", data)
     print(f"Selected Tone: Tone {tone_num} - {tone_name} (scores: {tone_score})")

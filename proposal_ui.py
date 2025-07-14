@@ -59,23 +59,42 @@ with tabs[0]:
 
                 # --- Display Proposal ---
                 st.subheader("Written Proposal")
-                st.code(proposal, language="markdown", width=1000)
+                st.markdown(proposal)
 
                 # --- Copy to Clipboard Button ---
-                escaped_proposal = proposal.replace("`", "\\`").replace("\\", "\\\\")
-                copy_code = f"""
+                escaped_proposal = proposal.replace("\\", "\\\\").replace("`", "\\`").replace("\n", "\\n").replace("\"", "\\\"")
+
+                copy_button = f"""
                     <script>
-                    function copyToClipboard(text) {{
+                    function copyProposal() {{
+                        const text = `{escaped_proposal}`;
                         navigator.clipboard.writeText(text).then(function() {{
-                            alert("Proposal copied to clipboard.");
+                            alert("Proposal copied to clipboard!");
                         }}, function(err) {{
-                            alert("Failed to copy: " + err);
+                            alert("Error copying to clipboard: " + err);
                         }});
                     }}
                     </script>
-
-                    <button onclick="copyToClipboard(`{escaped_proposal}`)">Copy Proposal</button>
+                    <button onclick="copyProposal()">📋 Copy Proposal</button>
                 """
+
+                st.components.v1.html(
+                    """
+                    <style>
+                    button {
+                        background-color: #4CAF50;
+                        color: white;
+                        padding: 6px;
+                        font-size: 16px;
+                        width: 100%;
+                        border: none;
+                        cursor: pointer;
+                        border-radius: 5px;
+                    }
+                    </style>
+                    """ + copy_button, 
+                    height=40
+                )
 
 with tabs[1]:
     st.header("Better Proposal")
