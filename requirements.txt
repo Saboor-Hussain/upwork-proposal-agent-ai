@@ -9,3 +9,5 @@ trafilatura
 openpyxl
 pandas
 streamlit
+faiss-cpu
+pinecone-client

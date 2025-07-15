@@ -1,6 +1,7 @@
 import streamlit as st
 import time
-from proposal import write_proposal, select_best_proposal
+from proposal import write_proposal
+from vector_storage import update_proposal_history_by_id, get_all_history_entries
 
 st.title("Upwork Proposal Generator")
 
@@ -20,8 +21,23 @@ if not st.session_state["authenticated"]:
             st.error("Incorrect password.")
     st.stop()
 
+# --- Sidebar: Proposal History ---
+history_entries = get_all_history_entries()
+selected_id = st.sidebar.selectbox(
+    "Proposal History",
+    options=[e.proposal_id for e in history_entries],
+    format_func=lambda pid: next((f"{e.job_text[:20]}... | {e.date_time}" for e in history_entries if e.proposal_id == pid), pid)
+)
+selected_entry = next((e for e in history_entries if e.proposal_id == selected_id), None)
+
+if selected_entry:
+    st.sidebar.markdown(f"**Date:** {selected_entry.date_time}")
+    st.sidebar.markdown(f"**Job:** {selected_entry.job_text[:100]}...")
+    st.sidebar.markdown(f"**Rating:** {selected_entry.response_review}")
+    st.sidebar.markdown(f"**Comments:** {selected_entry.comments}")
+
 # --- Main App ---
-tabs = st.tabs(["Write Proposal", "Better Proposal"])
+tabs = st.tabs(["Write Proposal", "Review Proposal", "Better Proposal"])
 
 with tabs[0]:
     st.header("Write Proposal")
@@ -51,52 +67,96 @@ with tabs[0]:
                 st.info("Writing proposal...")
                 time.sleep(1)
 
-                proposal = write_proposal(job_text_wp)
+                proposal, proposal_id = write_proposal(job_text_wp)
 
                 st.success("Proposal written.")
                 time.sleep(1)
                 st.success("Done.")
 
-                # --- Display Proposal ---
-                st.subheader("Written Proposal")
-                st.markdown(proposal)
+                # Store proposal and id in session_state
+                st.session_state['last_proposal_id'] = proposal_id
+                st.session_state['last_proposal'] = proposal
+                # Reset feedback fields for new proposal
+                st.session_state['wp_comment'] = ""
+                st.session_state['wp_rating'] = 5
 
-                # --- Copy to Clipboard Button ---
-                escaped_proposal = proposal.replace("\\", "\\\\").replace("`", "\\`").replace("\n", "\\n").replace("\"", "\\\"")
+    # --- Display Proposal and Feedback only if proposal exists ---
+    if st.session_state.get('last_proposal_id') and st.session_state.get('last_proposal'):
+        st.subheader("Written Proposal")
+        st.markdown(st.session_state['last_proposal'])
 
-                copy_button = f"""
-                    <script>
-                    function copyProposal() {{
-                        const text = `{escaped_proposal}`;
-                        navigator.clipboard.writeText(text).then(function() {{
-                            alert("Proposal copied to clipboard!");
-                        }}, function(err) {{
-                            alert("Error copying to clipboard: " + err);
-                        }});
-                    }}
-                    </script>
-                    <button onclick="copyProposal()">📋 Copy Proposal</button>
-                """
+        # --- Copy to Clipboard Button ---
+        escaped_proposal = st.session_state['last_proposal'].replace("\\", "\\\\").replace("`", "\\`").replace("\n", "\\n").replace("\"", "\\\"")
+        copy_button = f"""
+            <script>
+            function copyProposal() {{
+                const text = `{escaped_proposal}`;
+                navigator.clipboard.writeText(text).then(function() {{
+                    alert("Proposal copied to clipboard!");
+                }}, function(err) {{
+                    alert("Error copying to clipboard: " + err);
+                }});
+            }}
+            </script>
+            <button onclick=\"copyProposal()\">📋 Copy Proposal</button>
+        """
+        st.components.v1.html(
+            """
+            <style>
+            button {
+                background-color: #4CAF50;
+                color: white;
+                padding: 6px;
+                font-size: 16px;
+                width: 100%;
+                border: none;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+            </style>
+            """ + copy_button, 
+            height=40
+        )
+        st.markdown("---")
 
-                st.components.v1.html(
-                    """
-                    <style>
-                    button {
-                        background-color: #4CAF50;
-                        color: white;
-                        padding: 6px;
-                        font-size: 16px;
-                        width: 100%;
-                        border: none;
-                        cursor: pointer;
-                        border-radius: 5px;
-                    }
-                    </style>
-                    """ + copy_button, 
-                    height=40
-                )
+        # --- Comment and Rating Input ---
+        st.subheader("Feedback on Proposal")
+        comment = st.text_area("Add your comment:", key="wp_comment")
+        rating = st.slider("Rate this proposal (1=Poor, 5=Excellent):", min_value=1, max_value=5, value=5, key="wp_rating")
+        if st.button("Submit Feedback", key="wp_feedback"):
+            proposal_id = st.session_state.get('last_proposal_id')
+            if proposal_id:
+                success = update_proposal_history_by_id(proposal_id, comment, rating)
+                if success:
+                    st.success("Feedback saved!")
+                else:
+                    st.error("Could not save feedback. Please try again.")
+            else:
+                st.error("No proposal to update. Please generate a proposal first.")
 
 with tabs[1]:
+    st.header("Review Proposal")
+    if selected_entry:
+        st.subheader("Proposal Details")
+        st.markdown(f"**Date:** {selected_entry.date_time}")
+        st.markdown(f"**Job:**\n{selected_entry.job_text}")
+        st.markdown(f"**Proposal:**\n{selected_entry.proposal}")
+        st.markdown(f"**Comments:** {selected_entry.comments}")
+        st.markdown(f"**Rating:** {selected_entry.response_review}")
+        st.markdown("---")
+        # Feedback update UI
+        comment = st.text_area("Update comment:", value=selected_entry.comments, key="review_comment")
+        rating = st.slider("Update rating (1=Poor, 5=Excellent):", min_value=1, max_value=5, value=int(selected_entry.response_review) if str(selected_entry.response_review).isdigit() else 5, key="review_rating")
+        if st.button("Update Feedback", key="review_feedback"):
+            success = update_proposal_history_by_id(selected_entry.proposal_id, comment, rating)
+            if success:
+                st.success("Feedback updated!")
+            else:
+                st.error("Could not update feedback. Please try again.")
+    else:
+        st.info("Select a proposal from the sidebar to review.")
+
+with tabs[2]:
     st.header("Better Proposal")
     st.info("This feature is under development.")
     st.button("Submit", disabled=True, key="bp_submit")
