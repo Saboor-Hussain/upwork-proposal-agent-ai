@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 from proposal import write_proposal
-from vector_storage import update_proposal_history_by_id
+from vector_storage import update_proposal_history_by_id, get_all_history_entries
 
 st.title("Upwork Proposal Generator")
 
@@ -21,8 +21,23 @@ if not st.session_state["authenticated"]:
             st.error("Incorrect password.")
     st.stop()
 
+# --- Sidebar: Proposal History ---
+history_entries = get_all_history_entries()
+selected_id = st.sidebar.selectbox(
+    "Proposal History",
+    options=[e.proposal_id for e in history_entries],
+    format_func=lambda pid: next((f"{e.job_text[:20]}... | {e.date_time}" for e in history_entries if e.proposal_id == pid), pid)
+)
+selected_entry = next((e for e in history_entries if e.proposal_id == selected_id), None)
+
+if selected_entry:
+    st.sidebar.markdown(f"**Date:** {selected_entry.date_time}")
+    st.sidebar.markdown(f"**Job:** {selected_entry.job_text[:100]}...")
+    st.sidebar.markdown(f"**Rating:** {selected_entry.response_review}")
+    st.sidebar.markdown(f"**Comments:** {selected_entry.comments}")
+
 # --- Main App ---
-tabs = st.tabs(["Write Proposal", "Better Proposal"])
+tabs = st.tabs(["Write Proposal", "Review Proposal", "Better Proposal"])
 
 with tabs[0]:
     st.header("Write Proposal")
@@ -61,6 +76,9 @@ with tabs[0]:
                 # Store proposal and id in session_state
                 st.session_state['last_proposal_id'] = proposal_id
                 st.session_state['last_proposal'] = proposal
+                # Reset feedback fields for new proposal
+                st.session_state['wp_comment'] = ""
+                st.session_state['wp_rating'] = 5
 
     # --- Display Proposal and Feedback only if proposal exists ---
     if st.session_state.get('last_proposal_id') and st.session_state.get('last_proposal'):
@@ -117,6 +135,28 @@ with tabs[0]:
                 st.error("No proposal to update. Please generate a proposal first.")
 
 with tabs[1]:
+    st.header("Review Proposal")
+    if selected_entry:
+        st.subheader("Proposal Details")
+        st.markdown(f"**Date:** {selected_entry.date_time}")
+        st.markdown(f"**Job:**\n{selected_entry.job_text}")
+        st.markdown(f"**Proposal:**\n{selected_entry.proposal}")
+        st.markdown(f"**Comments:** {selected_entry.comments}")
+        st.markdown(f"**Rating:** {selected_entry.response_review}")
+        st.markdown("---")
+        # Feedback update UI
+        comment = st.text_area("Update comment:", value=selected_entry.comments, key="review_comment")
+        rating = st.slider("Update rating (1=Poor, 5=Excellent):", min_value=1, max_value=5, value=int(selected_entry.response_review) if str(selected_entry.response_review).isdigit() else 5, key="review_rating")
+        if st.button("Update Feedback", key="review_feedback"):
+            success = update_proposal_history_by_id(selected_entry.proposal_id, comment, rating)
+            if success:
+                st.success("Feedback updated!")
+            else:
+                st.error("Could not update feedback. Please try again.")
+    else:
+        st.info("Select a proposal from the sidebar to review.")
+
+with tabs[2]:
     st.header("Better Proposal")
     st.info("This feature is under development.")
     st.button("Submit", disabled=True, key="bp_submit")
