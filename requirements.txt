@@ -10,4 +10,4 @@ openpyxl
 pandas
 streamlit
 faiss-cpu
-pinecone-client
+pinecone
