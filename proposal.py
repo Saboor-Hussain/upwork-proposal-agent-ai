@@ -153,7 +153,7 @@ def get_proposal_agent():
     agent = initialize_agent(
         tools=[portfolio_tool, upwork_portfolio_tool, figma_portfolio_tool, history_retriever_tool],
         llm=llm,
-        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,  # ReAct agent
+        agent=AgentType.OPENAI_FUNCTIONS,  # ReAct agent
         handle_parsing_errors=True,
         verbose=True,
         max_iterations=40,
