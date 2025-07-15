@@ -51,7 +51,7 @@ def load_figma_embeddings():
     return data['embeddings'], data['figmas']
 
 
-def get_relevant_portfolio(job_desc, top_k=3):
+def get_relevant_portfolio(job_desc, top_k=5):
     model = SentenceTransformer('all-MiniLM-L6-v2')
     embeddings, websites = load_embeddings()
     job_emb = model.encode([job_desc])[0]
@@ -67,7 +67,7 @@ def get_relevant_portfolio(job_desc, top_k=3):
     return [w for w, _ in relevant[:top_k]]
 
 
-def get_relevant_portfolio_upwork(job_desc, top_k=1):
+def get_relevant_portfolio_upwork(job_desc, top_k=2):
     model = SentenceTransformer('all-MiniLM-L6-v2')
     embeddings, websites = load_upwork_embeddings()
     job_emb = model.encode([job_desc])[0]
@@ -306,6 +306,9 @@ Write a personalized Upwork proposal for the following job. Follow these rules:
 10. Conclude with a call-to-action encouraging the client to reach out (e.g., "Let's schedule a call to discuss this project further and explore how I can contribute to your success.").
 11. Avoid discussing budget or pricing details in the proposal text, regardless of their presence in the job description.
 12. Do not add any extra line before or after the proposal text.
+
+Note: Ensure the final proposal is humanized. Aim for a personal, friendly, and approachable style, avoiding robotic or generic language, as well as emojis or special characters like "–" which are often used by AI.
+
 '''
 
 
@@ -333,9 +336,59 @@ Upwork Case Studies:
 
 '''
 
+def humanize_proposal(proposal):
+    llm = ChatOpenAI(model="gpt-4.1-mini", api_key=OPENAI_API_KEY)
+    humanize_prompt = f"""
+    Rewrite the following proposal so it sounds genuinely written by a human freelancer. 
+    - Preserve all headings, bullet points, and formatting.
+    - Use a natural, conversational, and empathetic tone.
+    - Avoid robotic, generic, or overly formal language.
+    - Do not use emojis or special characters like —, –, etc.
+    - Add warmth and a personal touch where appropriate.
+    - Do not add or remove sections; keep the structure and length similar.
+    - Example (robotic): 'I am interested in your job. I have experience.'
+    - Example (humanized): 'I'm excited about your project and have helped clients with similar needs before.'
+    
+    Original Proposal:
+    {proposal}
+
+    Humanized Proposal:
+    """
+    humanized_proposal = llm([HumanMessage(content=humanize_prompt)]).content.strip()
+    return humanized_proposal
+
+
+# Function to retrieve and display relevant history and feedback
+
+def show_relevant_history_and_feedback(job_text, top_k=5):
+    """
+    Retrieve and display relevant past proposals and feedback for the given job description.
+    """
+    entries = retrieve_similar_history(job_text, top_k=top_k)
+    if not entries:
+        print("No relevant history found.")
+        return []
+    print("\n--- Relevant Past Proposals & Feedback ---\n")
+    for i, entry in enumerate(entries):
+        print(f"[{i+1}] Date: {entry.date_time}")
+        print(f"Job: {entry.job_text[:100]}...")
+        print(f"Proposal: {entry.proposal[:200]}...")
+        print(f"Comments: {entry.comments}")
+        print(f"Rating: {entry.response_review}")
+        print()
+    return entries
+
 
 # Main proposal agent
 def write_proposal(job_text):
+    history_entries = show_relevant_history_and_feedback(job_text, top_k=3)
+    history_context = "\n--- Relevant Past Proposals & Feedback ---\n"
+    for i, entry in enumerate(history_entries):
+        history_context += f"[{i+1}] Date: {entry.date_time}\nJob: {entry.job_text[:100]}...\nProposal: {entry.proposal[:200]}...\nComments: {entry.comments}\nRating: {entry.response_review}\n\n"
+    if not history_entries:
+        history_context += "No relevant history found.\n"
+
+
     data = extract_client_job_data(job_text)
     tone_num, tone_name, tone_score = select_tone_vectorized_factors(data)
     print("\n\n", "="*50, "EXTRACTED DATA AND SELECTED TONE", "="*50)
@@ -346,13 +399,6 @@ def write_proposal(job_text):
     print(f"Selected Tone: Tone {tone_num} - {tone_name}")
     print("\n" + "="*50 + " END OF EXTRACTED DATA AND SELECTED TONE " + "="*50 + "\n\n\n")
 
-    # Retrieve relevant history
-    history_entries = retrieve_similar_history(job_text, top_k=5)
-    history_context = "\n\n--- Relevant Past Proposals & Feedback ---\n"
-    for i, entry in enumerate(history_entries):
-        history_context += f"[{i+1}] Date: {entry.date_time}\nJob: {entry.job_text[:100]}...\nProposal: {entry.proposal[:200]}...\nComments: {entry.comments}\nRating: {entry.response_review}\n\n"
-    if not history_entries:
-        history_context += "No relevant history found.\n"
 
     agent = get_proposal_agent()
     llm = ChatOpenAI(model="gpt-4.1-nano", api_key=OPENAI_API_KEY)
@@ -361,7 +407,7 @@ def write_proposal(job_text):
     agent_instructions = """
         When solving this task, always use the following format:
         Thought: [your reasoning]
-        Action: [the tool to use, e.g., HistoryRetriever[<input>], PortfolioRetriever[<input>], etc.]
+        Action: [the tool to use, e.g., HistoryRetriever[<input>], PortfolioRetriever[<input>], UpworkPortfolioRetriever[<input>], FigmaPortfolioRetriever[<input>]]
         Observation: [result of the action]
         ... (repeat as needed)
         Final Answer: [your final proposal]
@@ -378,6 +424,7 @@ def write_proposal(job_text):
 
     Intro:
     """
+    llm = ChatOpenAI(model="gpt-4.1-nano", api_key=OPENAI_API_KEY)
     my_intro = llm([HumanMessage(content=intro_prompt)]).content.strip()
     thoughts = f"""
         {my_intro}
@@ -386,24 +433,43 @@ def write_proposal(job_text):
         Average hourly rate: {data.get('avg_hourly', 'N/A')}
         Niche-specific request: {data.get('niche', 'None found')}
         Selected Tone: Tone {tone_num} - {tone_name}
+        Justification for tone: [The agent chose this tone because of the above data.]
         Instructions for Proposal Writing: {PROPOSAL_RULES}
         Best Portfolio Links (for reference):\n{Best_Portfolio}\n
         MY_DATA (for reference):\n{MY_DATA}\n
-        {history_context}
         ---
         Agent Instructions (ReAct format):\n{agent_instructions}\n
+        {history_context}
     """
 
 
     prompt_template = PromptTemplate(
         input_variables=["thoughts"],
+        
         template="""
 You are Muhammad, an expert Upwork freelancer and proposal writer agent.
 Below are your thoughts and observations for the provided job data:
 
 {thoughts}
 
-Write a highly relevant, tailored Upwork proposal for this job, using the selected tone and all available context. 
+
+Write a highly relevant, tailored Upwork proposal for this job, using the selected tone and all available context. Start with a 1-2 line justification for your tone selection, then write the proposal.
+
+After the proposal, provide additional context for the agent's thought process as the "Justification of Proposal". This should be a short description (less than 300 characters) of:
+- A brief justification for the paragraphs you have written.
+- Why selected links are relevant and suitable for the job, including a justification for each link.
+- Why some links were not selected (if not selected) and provide the link of them in justification too, including a justification for each link.
+- Any other relevant context or notes for the agent's thought process.
+
+
+
+Return your output in the following pattern:
+Justification of tone: [your justification for the selected tone]
+---
+Proposal: [your full proposal text]
+---
+Justification of Proposal: [your justification for the proposal, including why you wrote each paragraph, why you selected certain links, and any other relevant context]
+
 """
     )
 
@@ -411,21 +477,24 @@ Write a highly relevant, tailored Upwork proposal for this job, using the select
     print("Extracted Data:", data)
     print(f"Selected Tone: Tone {tone_num} - {tone_name} (scores: {tone_score})")
     proposal = agent.run(user_prompt)
-    print("\n--- PROPOSAL ---\n")
-    print(proposal)
+
+    # Humanize the proposal
+    final_output = humanize_proposal(proposal)
+    print("\n--- FINAL PROPOSAL ---\n")
+    print(final_output)
 
     # Save to history with placeholders for comments/rating
     proposal_id = str(uuid.uuid4())
     entry = ProposalHistoryEntry(
         date_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         job_text=job_text,
-        proposal=proposal,
-        comments="",  # To be filled by UI
-        response_review=None,  # To be filled by UI
-        proposal_id=proposal_id  # New field
+        proposal=final_output,
+        comments="", 
+        response_review=None, 
+        proposal_id=proposal_id
     )
     save_proposal_history(entry)
-    return proposal, proposal_id
+    return final_output, proposal_id
 
 
 def get_best_proposal_selector_agent():
