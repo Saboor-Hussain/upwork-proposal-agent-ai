@@ -1,6 +1,6 @@
 import os
 import re
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from langchain_openai import ChatOpenAI
 from langchain.agents import initialize_agent, AgentType, Tool
 from langchain.schema import HumanMessage
@@ -9,12 +9,28 @@ import pickle
 import numpy as np
 from langchain.prompts import PromptTemplate
 from upwork_data import MY_DATA
+import json
+from datetime import datetime
+from langchain.vectorstores import FAISS
+from langchain.embeddings import HuggingFaceEmbeddings
+from vector_storage import (
+    ProposalHistoryEntry,
+    save_proposal_history,
+    get_all_history_entries,
+    get_st_embeddings,
+    retrieve_similar_history
+)
+import uuid
 
-load_dotenv()
+
+load_dotenv(find_dotenv())
+
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 EMBEDDINGS_FILE = './embeddings/website_embeddings_1.pkl'
 UPWORK_EMBEDDINGS_FILE = './embeddings/upwork_embeddings.pkl'
 FIGMA_EMBEDDINGS_FILE = './embeddings/figma_embeddings.pkl'
+VECTOR_STORAGE_DIR = './VectorStorage'
+VECTOR_DIM = 384  # all-MiniLM-L6-v2 output dim
 
 
 def load_embeddings():
@@ -99,17 +115,17 @@ def figma_portfolio_tool_func(job_desc: str):
 
 
 portfolio_tool = Tool(
-    name="Portfolio Retriever",
+    name="PortfolioRetriever",
     func=portfolio_tool_func,
     description="Given a job description, returns 2-3 relevant portfolio links from the matching niche."
 )
 upwork_portfolio_tool = Tool(
-    name="Upwork Portfolio Retriever",
+    name="UpworkPortfolioRetriever",
     func=upwork_portfolio_tool_func,
     description="Given a job description, returns 1 relevant Upwork Case Study link from the matching niche."
 )
 figma_portfolio_tool = Tool(
-    name="Figma Portfolio Retriever",
+    name="FigmaPortfolioRetriever",
     func=figma_portfolio_tool_func,
     description="Given a job description, returns 1 relevant Figma Portfolio link from the matching niche."
 )
@@ -120,9 +136,12 @@ def get_proposal_agent():
     agent = initialize_agent(
         tools=[portfolio_tool, upwork_portfolio_tool, figma_portfolio_tool],
         llm=llm,
-        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+        agent=AgentType.OPENAI_FUNCTIONS,  # Changed agent type for direct output
         handle_parsing_errors=True,
-        verbose=False
+        verbose=True,
+        max_iterations=30,  # Increased iteration limit
+        max_execution_time=180,  # Increased time limit (seconds)
+        early_stopping_method="generate"  # Stop as soon as output is generated
     )
     return agent
 
@@ -254,9 +273,8 @@ def select_tone(data):
 # Proposal writing rules
 PROPOSAL_RULES = '''
 Write a personalized Upwork proposal for the following job. Follow these rules:
-1. Start with a personalized greeting.
-2. Mention the job/niche context in the first line.
-3. Use the Upwork Portfolio Retriever tool to include 1–2 relevant Upwork Case Study links ONLY from the matching niche. Only include the raw link, not markdown or titles.
+1. Start with a personalized, single-line intro that includes the job/niche context.
+2. Write what you understand about the job and why you are suitable for the job by sharing relevant experience.
 4. Use the Portfolio Retriever tool to include 2–3 relevant portfolio links ONLY from the matching niche. Only include the raw link, not markdown or titles. Format them as bullets:
   • [raw link]
   • [raw link]
@@ -302,7 +320,6 @@ Upwork Case Studies:
 def write_proposal(job_text):
     data = extract_client_job_data(job_text)
     tone_num, tone_name, tone_score = select_tone_vectorized_factors(data)
-    # Extracted data and selected tone
     print("\n\n", "="*50, "EXTRACTED DATA AND SELECTED TONE", "="*50)
     print("Client Total Spend:", data.get('spend', 'N/A'))
     print("Average Hourly Rate:", data.get('avg_hourly', 'N/A'))
@@ -311,8 +328,15 @@ def write_proposal(job_text):
     print(f"Selected Tone: Tone {tone_num} - {tone_name}")
     print("\n" + "="*50 + " END OF EXTRACTED DATA AND SELECTED TONE " + "="*50 + "\n\n\n")
 
+    # Retrieve relevant history
+    history_entries = retrieve_similar_history(job_text, top_k=3)
+    history_context = "\n\n--- Relevant Past Proposals & Feedback ---\n"
+    for i, entry in enumerate(history_entries):
+        history_context += f"[{i+1}] Date: {entry.date_time}\nJob: {entry.job_text[:100]}...\nProposal: {entry.proposal[:200]}...\nComments: {entry.comments}\nRating: {entry.response_review}\n\n"
+    if not history_entries:
+        history_context += "No relevant history found.\n"
+
     agent = get_proposal_agent()
-    # Use LLM to generate a personalized intro based on MY_DATA and job_text
     llm = ChatOpenAI(model="gpt-4.1-nano", api_key=OPENAI_API_KEY)
     intro_prompt = f"""
 Using the following personal data, write a short, single-line personalized intro for an Upwork proposal. The intro should highlight why Muhammad is suitable for the job described below, referencing relevant experience, skills, and achievements from MY_DATA. Be specific to the job context.
@@ -336,6 +360,7 @@ Intro:
     Instructions for Proposal Writing: {PROPOSAL_RULES}
     Best Portfolio Links (for reference):\n{Best_Portfolio}\n
     MY_DATA (for reference):\n{MY_DATA}\n
+    {history_context}
     """
     prompt_template = PromptTemplate(
         input_variables=["thoughts"],
@@ -355,7 +380,19 @@ Write a highly relevant, tailored Upwork proposal for this job, using the select
     proposal = agent.run(user_prompt)
     print("\n--- PROPOSAL ---\n")
     print(proposal)
-    return proposal
+
+    # Save to history with placeholders for comments/rating
+    proposal_id = str(uuid.uuid4())
+    entry = ProposalHistoryEntry(
+        date_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        job_text=job_text,
+        proposal=proposal,
+        comments="",  # To be filled by UI
+        response_review=None,  # To be filled by UI
+        proposal_id=proposal_id  # New field
+    )
+    save_proposal_history(entry)
+    return proposal, proposal_id
 
 
 def get_best_proposal_selector_agent():
@@ -432,32 +469,12 @@ Job Description:
     return result
 
 
-if __name__ == "__main__":
-    # Example usage
-    job = """
-WordPress Site for Local Roofing Company
-Posted: 1 week ago — Location: United States
-Need a small business website for a roofing company to showcase services, projects, and collect leads. Must include quote form, map, and FAQs.
-Deliverables:
-Homepage, Services, Gallery, Quote Request Form
-Testimonials, FAQs, Google Map
-Tools: WordPress, Elementor, WPForms
-Budget: $1,600 fixed
- Duration: 2–3 weeks
- Expertise: Entry-Intermediate
-About the Client:
- Payment verified
- Rating: 4.7 of 5 reviews
- USA
- 6 jobs posted, 4 hires
- $2.1K spent
- Avg hourly: $21/hr
-"""
 
-    print("\n--- Generating 3 proposals ---\n")
-    proposal1 = write_proposal(job)
-    print(proposal1)
-    # proposal2 = write_proposal(job)
-    # proposal3 = write_proposal(job)
-    # print("\n--- Selecting the best proposal ---\n")
-    # select_best_proposal(job, proposal1, proposal2, proposal3)
+if __name__ == "__main__":
+    job_title = "Coaching Website for Online Wellness Program"
+    job_desc = """
+            I’m a wellness coach launching an online program. Need a landing site with booking calendar, testimonials, video content, blog, and integration with Teachable or Kajabi.
+        """
+    proposal, proposal_id = write_proposal(job_desc)
+    print(f"Proposal ID: {proposal_id}")
+    print(f"Generated Proposal:\n{proposal}")

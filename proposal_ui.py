@@ -1,6 +1,7 @@
 import streamlit as st
 import time
-from proposal import write_proposal, select_best_proposal
+from proposal import write_proposal
+from vector_storage import update_proposal_history_by_id
 
 st.title("Upwork Proposal Generator")
 
@@ -51,50 +52,69 @@ with tabs[0]:
                 st.info("Writing proposal...")
                 time.sleep(1)
 
-                proposal = write_proposal(job_text_wp)
+                proposal, proposal_id = write_proposal(job_text_wp)
 
                 st.success("Proposal written.")
                 time.sleep(1)
                 st.success("Done.")
 
-                # --- Display Proposal ---
-                st.subheader("Written Proposal")
-                st.markdown(proposal)
+                # Store proposal and id in session_state
+                st.session_state['last_proposal_id'] = proposal_id
+                st.session_state['last_proposal'] = proposal
 
-                # --- Copy to Clipboard Button ---
-                escaped_proposal = proposal.replace("\\", "\\\\").replace("`", "\\`").replace("\n", "\\n").replace("\"", "\\\"")
+    # --- Display Proposal and Feedback only if proposal exists ---
+    if st.session_state.get('last_proposal_id') and st.session_state.get('last_proposal'):
+        st.subheader("Written Proposal")
+        st.markdown(st.session_state['last_proposal'])
 
-                copy_button = f"""
-                    <script>
-                    function copyProposal() {{
-                        const text = `{escaped_proposal}`;
-                        navigator.clipboard.writeText(text).then(function() {{
-                            alert("Proposal copied to clipboard!");
-                        }}, function(err) {{
-                            alert("Error copying to clipboard: " + err);
-                        }});
-                    }}
-                    </script>
-                    <button onclick="copyProposal()">📋 Copy Proposal</button>
-                """
+        # --- Copy to Clipboard Button ---
+        escaped_proposal = st.session_state['last_proposal'].replace("\\", "\\\\").replace("`", "\\`").replace("\n", "\\n").replace("\"", "\\\"")
+        copy_button = f"""
+            <script>
+            function copyProposal() {{
+                const text = `{escaped_proposal}`;
+                navigator.clipboard.writeText(text).then(function() {{
+                    alert("Proposal copied to clipboard!");
+                }}, function(err) {{
+                    alert("Error copying to clipboard: " + err);
+                }});
+            }}
+            </script>
+            <button onclick=\"copyProposal()\">📋 Copy Proposal</button>
+        """
+        st.components.v1.html(
+            """
+            <style>
+            button {
+                background-color: #4CAF50;
+                color: white;
+                padding: 6px;
+                font-size: 16px;
+                width: 100%;
+                border: none;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+            </style>
+            """ + copy_button, 
+            height=40
+        )
+        st.markdown("---")
 
-                st.components.v1.html(
-                    """
-                    <style>
-                    button {
-                        background-color: #4CAF50;
-                        color: white;
-                        padding: 6px;
-                        font-size: 16px;
-                        width: 100%;
-                        border: none;
-                        cursor: pointer;
-                        border-radius: 5px;
-                    }
-                    </style>
-                    """ + copy_button, 
-                    height=40
-                )
+        # --- Comment and Rating Input ---
+        st.subheader("Feedback on Proposal")
+        comment = st.text_area("Add your comment:", key="wp_comment")
+        rating = st.slider("Rate this proposal (1=Poor, 5=Excellent):", min_value=1, max_value=5, value=5, key="wp_rating")
+        if st.button("Submit Feedback", key="wp_feedback"):
+            proposal_id = st.session_state.get('last_proposal_id')
+            if proposal_id:
+                success = update_proposal_history_by_id(proposal_id, comment, rating)
+                if success:
+                    st.success("Feedback saved!")
+                else:
+                    st.error("Could not save feedback. Please try again.")
+            else:
+                st.error("No proposal to update. Please generate a proposal first.")
 
 with tabs[1]:
     st.header("Better Proposal")
