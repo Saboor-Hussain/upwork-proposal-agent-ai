@@ -114,6 +114,18 @@ def figma_portfolio_tool_func(job_desc: str):
     return '\n'.join([f"- {w['Figma Link']} ({w['Category']})" for w in portfolio])
 
 
+def history_retriever_tool_func(job_desc: str):
+    # Retrieve similar history from Pinecone
+    entries = retrieve_similar_history(job_desc, top_k=5)
+    if not entries:
+        return "No relevant history found."
+    result = "--- Relevant Past Proposals & Feedback ---\n"
+    for i, entry in enumerate(entries):
+        result += f"[{i+1}] Date: {entry.date_time}\nJob: {entry.job_text[:100]}...\nProposal: {entry.proposal[:200]}...\nComments: {entry.comments}\nRating: {entry.response_review}\n\n"
+    return result
+
+
+
 portfolio_tool = Tool(
     name="PortfolioRetriever",
     func=portfolio_tool_func,
@@ -130,17 +142,6 @@ figma_portfolio_tool = Tool(
     description="Given a job description, returns 1 relevant Figma Portfolio link from the matching niche."
 )
 
-
-def history_retriever_tool_func(job_desc: str):
-    # Retrieve similar history from Pinecone
-    entries = retrieve_similar_history(job_desc, top_k=5)
-    if not entries:
-        return "No relevant history found."
-    result = "--- Relevant Past Proposals & Feedback ---\n"
-    for i, entry in enumerate(entries):
-        result += f"[{i+1}] Date: {entry.date_time}\nJob: {entry.job_text[:100]}...\nProposal: {entry.proposal[:200]}...\nComments: {entry.comments}\nRating: {entry.response_review}\n\n"
-    return result
-
 history_retriever_tool = Tool(
     name="HistoryRetriever",
     func=history_retriever_tool_func,
@@ -153,7 +154,7 @@ def get_proposal_agent():
     agent = initialize_agent(
         tools=[portfolio_tool, upwork_portfolio_tool, figma_portfolio_tool, history_retriever_tool],
         llm=llm,
-        agent=AgentType.OPENAI_FUNCTIONS,  # ReAct agent
+        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
         handle_parsing_errors=True,
         verbose=True,
         max_iterations=40,
@@ -289,25 +290,31 @@ def select_tone(data):
 
 # Proposal writing rules
 PROPOSAL_RULES = '''
-Write a personalized Upwork proposal for the following job. Follow these rules:
+    Write a personalized Upwork proposal for the following job. Follow these rules:
 
-1. Introduction: Present yourself as an experienced professional with over 10 years in the industry, emphasizing your expertise in creating websites similar to the client's needs.
-2. Explain your understanding of the job requirements and emphasize your suitability by sharing relevant experiences and expertise without mentioning any technical skills.
-4. If the job description does not include any specific niche then use the Best_Portfolio. Otherwise, use the Portfolio Retriever tool to include 2–3 relevant portfolio links ONLY from the matching niche. Only include the raw link, not markdown or titles. Format them as bullets:
-  • [raw link]
-  • [raw link]
-  • [raw link]
-  ...
-5. If the job description includes "Figma" or "figma", use the Figma Portfolio Retriever tool. Mention, "This is the website we have designed and the prototype link is [prototype link]. This is what we have developed [website link]." Ensure the project name matches. Only include the raw link, not markdown or titles.
-6. If the job description does not include "Figma" or "figma", use the Figma Portfolio Retriever tool to include the Figma link of the relevant category design prototype. Only include the raw link, not markdown or titles.
-7. Follow the Creasions writing style (calm, confident, helpful).
-8. Avoid mentioning any technical skills even if they are present in the job description.
-9. Give timeline or delivery estimate if possible.
-10. Conclude with a call-to-action encouraging the client to reach out (e.g., "Let's schedule a call to discuss this project further and explore how I can contribute to your success.").
-11. Avoid discussing budget or pricing details in the proposal text, regardless of their presence in the job description.
-12. Do not add any extra line before or after the proposal text.
+    1. Introduction: Write a 2-line introduction using the following rule:
+        Use this base:  ({MY_DATA['profile']['profile_views']}+ earned on Upwork | {MY_DATA['profile']['num_of_jobs']}+ projects | {MY_DATA['profile']['years_of_experience']}+ years of experience)
+        Always mention Upwork earnings
+        Align emotionally with client’s industry or goal
+        Speak like a confident business owner (not a junior freelancer)
+        No technical terms or platform names in the intro
+    e.g: "I’ve built dozens of websites for fitness brands, coaches, and consultants focused on growth. With over $400K earned on Upwork, I bring strategy and execution that moves results."
 
-Note: Ensure the final proposal is humanized. Aim for a personal, friendly, and approachable style, avoiding robotic or generic language, as well as emojis or special characters like "–" which are often used by AI.
+    2. Understanding the Project: In the second paragraph, clearly reference the client's goals and pain points (without rewording the job post). Explain why this project excites you, and avoid listing tech terms or basic features.
+    3. If the job description does not include any specific niche then use the Best_Portfolio. Otherwise, use the Portfolio Retriever tool to include 2-3 relevant portfolio links ONLY from the matching niche. Only include the raw link, not markdown or titles. Format them as bullets:
+    • [raw link]
+    • [raw link]
+    • [raw link]
+    ...
+    4. If the job description includes "Figma" or "figma", use the Figma Portfolio Retriever tool. Mention, "This is the website we have designed and the prototype link is [prototype link]. This is what we have developed [website link]." Ensure the project name matches. Only include the raw link, not markdown or titles.
+    5. If the job description does not include "Figma" or "figma", use the Figma Portfolio Retriever tool to include the Figma link of the relevant category design prototype. Only include the raw link, not markdown or titles.
+    6. Follow the Creasions writing style (calm, confident, helpful): Avoid sounding like a resume, avoid overselling or listing buzzwords, and show excitement for the client's niche. Never list technical skills or tool names as qualifications.
+    7. Give timeline or delivery estimate if possible. If not mentioned, suggest a confident estimate (e.g., 2–4 weeks).
+    8. Always close with: "Let's schedule a call to discuss this project further and explore how I can contribute to your success."
+    9. Avoid discussing budget or pricing details in the proposal text, regardless of their presence in the job description.
+    10. Do not add any extra line before or after the proposal text.
+
+    Note: Ensure the final proposal is humanized. Aim for a personal, friendly, and approachable style, avoiding robotic or generic language, as well as emojis or special characters like "–" which are often used by AI.
 
 '''
 
@@ -348,6 +355,7 @@ def humanize_proposal(proposal):
     - Do not add or remove sections; keep the structure and length similar.
     - Example (robotic): 'I am interested in your job. I have experience.'
     - Example (humanized): 'I'm excited about your project and have helped clients with similar needs before.'
+    - Always close with: "Let's schedule a call to discuss this project further and explore how I can contribute to your success."
     
     Original Proposal:
     {proposal}
@@ -405,16 +413,18 @@ def write_proposal(job_text):
 
     
     agent_instructions = """
-        When solving this task, always use the following format:
+        You must always use the following format for every reasoning step:
         Thought: [your reasoning]
         Action: [the tool to use, e.g., HistoryRetriever[<input>], PortfolioRetriever[<input>], UpworkPortfolioRetriever[<input>], FigmaPortfolioRetriever[<input>]]
         Observation: [result of the action]
         ... (repeat as needed)
+        When you have gathered all necessary information and completed all tool actions, only then provide:
         Final Answer: [your final proposal]
+        Do NOT skip the Action step after any Thought. Do NOT jump directly to Final Answer or justification after a Thought. Every Thought must be followed by an Action and Observation.
         """
 
     intro_prompt = f"""
-    Using the following personal data, write a short, single-line personalized intro for an Upwork proposal. The intro should highlight why Muhammad is suitable for the job described below, referencing relevant experience, skills, and achievements from MY_DATA. Be specific to the job context.
+    Write a short, single-line personalized intro for an Upwork proposal. The intro should highlight why Muhammad is suitable for the job described below, referencing relevant experience, skills, and achievements from MY_DATA. Be specific to the job context. The intro should be 1-2 sentences long.
 
     MY_DATA:
     {MY_DATA}
@@ -436,6 +446,16 @@ def write_proposal(job_text):
         Justification for tone: [The agent chose this tone because of the above data.]
         Instructions for Proposal Writing: {PROPOSAL_RULES}
         Best Portfolio Links (for reference):\n{Best_Portfolio}\n
+        PROPOSAL BODY STRUCTURE:
+        ```
+        Start with your personalized 2-line intro
+        Brief alignment with client’s vision
+        2–3 portfolio links with strong relevance
+        Brief description of your approach (outcome-focused, not technical)
+        Timeline or delivery estimate (suggest if not mentioned)
+        Call to Action:
+        “Let’s schedule a call to discuss this project further and explore how I can contribute to your success.”
+        ```
         MY_DATA (for reference):\n{MY_DATA}\n
         ---
         Agent Instructions (ReAct format):\n{agent_instructions}\n
@@ -445,31 +465,33 @@ def write_proposal(job_text):
 
     prompt_template = PromptTemplate(
         input_variables=["thoughts"],
-        
         template="""
-You are Muhammad, an expert Upwork freelancer and proposal writer agent.
+You are Muhammad, an expert Upwork freelancer and proposal writer agent. Your job is to generate personalized Upwork proposals that sound human, confident, and tailored — never robotic.
 Below are your thoughts and observations for the provided job data:
 
 {thoughts}
 
+Strictly follow this reasoning format for every step:
+Thought: [your reasoning]
+Action: [the tool to use, e.g., HistoryRetriever[<input>], PortfolioRetriever[<input>], UpworkPortfolioRetriever[<input>], FigmaPortfolioRetriever[<input>]]
+Observation: [result of the action]
+... (repeat as needed)
+When you have gathered all necessary information and completed all tool actions, only then provide:
+Final Answer: [your full proposal text]
+Do NOT skip the Action step after any Thought. Do NOT jump directly to Final Answer or justification after a Thought. Every Thought must be followed by an Action and Observation.
 
-Write a highly relevant, tailored Upwork proposal for this job, using the selected tone and all available context. Start with a 1-2 line justification for your tone selection, then write the proposal.
-
-After the proposal, provide additional context for the agent's thought process as the "Justification of Proposal". This should be a short description (less than 300 characters) of:
+After the Final Answer, provide additional context for the agent's thought process as the "Justification of Proposal". This should be a short description (less than 300 characters) of:
 - A brief justification for the paragraphs you have written.
 - Why selected links are relevant and suitable for the job, including a justification for each link.
 - Why some links were not selected (if not selected) and provide the link of them in justification too, including a justification for each link.
 - Any other relevant context or notes for the agent's thought process.
 
-
-
 Return your output in the following pattern:
 Justification of tone: [your justification for the selected tone]
 ---
-Proposal: [your full proposal text]
+Final Answer: [your full proposal text]
 ---
 Justification of Proposal: [your justification for the proposal, including why you wrote each paragraph, why you selected certain links, and any other relevant context]
-
 """
     )
 
@@ -480,21 +502,111 @@ Justification of Proposal: [your justification for the proposal, including why y
 
     # Humanize the proposal
     final_output = humanize_proposal(proposal)
-    print("\n--- FINAL PROPOSAL ---\n")
-    print(final_output)
-
-    # Save to history with placeholders for comments/rating
+    # Checklist evaluation loop
+    while True:
+        checklist_results = checklist_tool(job_text, final_output)
+        failed_items = [item for item, passed in checklist_results.items() if not passed]
+        if not failed_items:
+            break
+        corrections = f"Please correct the following issues: {failed_items}"
+        final_output = proposal_corrector(final_output, corrections)
     proposal_id = str(uuid.uuid4())
     entry = ProposalHistoryEntry(
         date_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         job_text=job_text,
         proposal=final_output,
-        comments="", 
-        response_review=None, 
+        comments="",
+        response_review=None,
         proposal_id=proposal_id
     )
     save_proposal_history(entry)
     return final_output, proposal_id
+
+
+def checklist_tool(job_text, proposal):
+    """
+    Returns a dict of checklist items and their pass/fail status for the proposal.
+    """
+    checklist = [
+        "Tone is accurate based on budget and niche",
+        "$400K+ earnings always mentioned in intro",
+        "Only validated portfolio links used",
+        "Figma logic followed",
+        "Timeline is stated",
+        "Strong CTA included",
+    ]
+    llm = ChatOpenAI(model="gpt-4.1-nano", api_key=OPENAI_API_KEY)
+    eval_prompt = f"""
+You are a Proposal Checklist Agent. For each checklist item below, return True if the proposal meets it, otherwise False. Return a JSON object with checklist items as keys and True/False as values.
+Checklist:
+{json.dumps(checklist)}
+
+PROPOSAL RULES:
+{PROPOSAL_RULES}
+
+Job Description:
+{job_text}
+Proposal:
+{proposal}
+Return format:
+{{"Tone is accurate based on budget and niche": true/false, ...}}
+"""
+    response = llm([HumanMessage(content=eval_prompt)]).content.strip()
+    print("\n\n", "="*50, "CHECKLIST RESPONSE", "="*50)
+    print(response)
+    print("\n" + "="*50 + " END OF CHECKLIST RESPONSE " + "="*50 + "\n\n\n")
+
+    try:
+        result = json.loads(response)
+    except Exception:
+        result = {item: False for item in checklist}
+    return result
+
+def proposal_corrector(proposal, corrections, job_text=None):
+    """
+    Resolves only the specific failed checklist items in the proposal.
+    If Upwork, Portfolio, Websites, or Figma link is missing, fetch and insert them using relevant functions.
+    For other items, prompt LLM to rewrite only the failed section(s).
+    """
+    updated_proposal = proposal
+    if job_text and corrections:
+        # corrections is a list of failed items
+        for item in corrections:
+            if "Portfolio" in item or "Websites" in item:
+                # Insert portfolio links
+                portfolio_links = portfolio_tool_func(job_text)
+                # Replace or append portfolio section
+                if "•" in updated_proposal:
+                    # Replace existing portfolio links
+                    updated_proposal = re.sub(r"(•.*?)(\n\n|$)", f"{portfolio_links}\n\n", updated_proposal, flags=re.DOTALL)
+                else:
+                    updated_proposal += f"\n{portfolio_links}\n"
+            elif "Figma" in item:
+                figma_links = figma_portfolio_tool_func(job_text)
+                if "figma.com" in updated_proposal:
+                    updated_proposal = re.sub(r"(https://www.figma.com/.*?)(\n|$)", f"{figma_links}\n", updated_proposal)
+                else:
+                    updated_proposal += f"\n{figma_links}\n"
+            elif "Upwork" in item:
+                upwork_links = upwork_portfolio_tool_func(job_text)
+                if "upwork.com" in updated_proposal:
+                    updated_proposal = re.sub(r"(https://www.upwork.com/.*?)(\n|$)", f"{upwork_links}\n", updated_proposal)
+                else:
+                    updated_proposal += f"\n{upwork_links}\n"
+            else:
+                # For other items, ask LLM to rewrite only the failed section
+                llm = ChatOpenAI(model="gpt-4.1-mini", api_key=OPENAI_API_KEY)
+                correct_prompt = f"""
+You are a Proposal Correction Agent. Here is a proposal. Only rewrite the section that addresses the following failed checklist item, keeping the rest unchanged.
+Proposal:
+{updated_proposal}
+Failed Item:
+{item}
+Return only the corrected proposal text.
+"""
+                updated_proposal = llm([HumanMessage(content=correct_prompt)]).content.strip()
+    return updated_proposal
+
 
 
 def get_best_proposal_selector_agent():
