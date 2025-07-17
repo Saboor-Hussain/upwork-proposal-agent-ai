@@ -2,6 +2,42 @@ import streamlit as st
 import time
 from proposal import write_proposal
 from vector_storage import update_proposal_history_by_id, get_all_history_entries
+from io import StringIO
+import sys
+
+
+class StreamToLogger:
+    def __init__(self):
+        self.terminal = sys.__stdout__
+        self.log_buffer = StringIO()
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log_buffer.write(message)
+
+    def flush(self):
+        self.terminal.flush()
+        self.log_buffer.flush()
+
+    def get_logs(self):
+        return self.log_buffer.getvalue()
+
+
+# Initialize logger once in session_state
+if "stream_logger" not in st.session_state:
+    stream_logger = StreamToLogger()
+    sys.stdout = stream_logger
+    st.session_state["stream_logger"] = stream_logger
+else:
+    stream_logger = st.session_state["stream_logger"]
+
+@st.dialog("Show Agent Logs", width="large")
+def show_logs_dialog():
+    logs = stream_logger.get_logs()
+    st.code(logs or "No logs yet.", language="text")
+    if st.button("Close"):
+        st.rerun()
+
 
 st.title("Upwork Proposal Generator")
 
@@ -26,7 +62,7 @@ history_entries = get_all_history_entries()
 selected_id = st.sidebar.selectbox(
     "Proposal History",
     options=[e.proposal_id for e in history_entries],
-    format_func=lambda pid: next((f"{e.job_text[:20]}... | {e.date_time}" for e in history_entries if e.proposal_id == pid), pid)
+    format_func=lambda pid: next((f"{e.job_text[:40]}... | {e.date_time}" for e in history_entries if e.proposal_id == pid), pid)
 )
 selected_entry = next((e for e in history_entries if e.proposal_id == selected_id), None)
 
@@ -35,6 +71,13 @@ if selected_entry:
     st.sidebar.markdown(f"**Job:** {selected_entry.job_text[:100]}...")
     st.sidebar.markdown(f"**Rating:** {selected_entry.response_review}")
     st.sidebar.markdown(f"**Comments:** {selected_entry.comments}")
+
+
+
+st.sidebar.markdown("---")
+if st.sidebar.button("Show Logs"):
+    show_logs_dialog()
+
 
 # --- Main App ---
 tabs = st.tabs(["Write Proposal", "Review Proposal", "Better Proposal"])
@@ -72,6 +115,7 @@ with tabs[0]:
                 st.success("Proposal written.")
                 time.sleep(1)
                 st.success("Done.")
+                st.markdown(f"**Proposal ID:** {proposal_id}")
 
                 # Store proposal and id in session_state
                 st.session_state['last_proposal_id'] = proposal_id
