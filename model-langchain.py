@@ -6,22 +6,27 @@ import numpy as np
 
 EMBEDDING_MODEL = 'all-MiniLM-L6-v2'
 
-DATA_CSV = './website-data.csv'
+DATA_CSV = './upwork-data/weblink-for-upwork-proposal.csv'
 UPWORK_DATA_CSV = './data/upwork-portfolios.csv'
 FIGMA_DATA_CSV = './data/figma-portfolios.csv'
 
-EMBEDDINGS_FILE = './embeddings/website_embeddings_1.pkl'
+EMBEDDINGS_FILE = './embeddings/website_embeddings_2.pkl'
 UPWORK_EMBEDDINGS_FILE = './embeddings/upwork_embeddings.pkl'
 FIGMA_EMBEDDINGS_FILE = './embeddings/figma_embeddings.pkl'
 
 # Load website data
 def load_website_data():
-    websites = []
-    with open(DATA_CSV, 'r', encoding='utf-8') as f:
+    with open(DATA_CSV, 'r', encoding='utf-8-sig') as f:
         reader = csv.DictReader(f)
+        print("Raw CSV Headers Detected:", reader.fieldnames)
+
+        data = []
         for row in reader:
-            websites.append(row)
-    return websites
+            cleaned_row = {k.strip(): v.strip() for k, v in row.items()}
+            data.append(cleaned_row)
+
+        return data
+
 
 
 def load_upwork_data():
@@ -48,16 +53,27 @@ def load_figma_data():
     return figmas
 
 def create_and_store_embeddings():
-    model = SentenceTransformer(EMBEDDING_MODEL)
+    model = SentenceTransformer('all-MiniLM-L6-v2')
     websites = load_website_data()
+
     texts = [
-        f"Link: {w['Website Links']}\nCategory: {w['Category']}\nDescription: {w['Description']}\nKeywords: {w['Keywords']}\nTechstacks: {w['Techstacks']}"
+        f"""Link: {w['Website URL']}
+        Category: {w['Category']}
+        Sub Category: {w.get('sub category', '')}
+        Niche: {w.get('Niche', '')}
+        Priority: {w.get('Priority', '')}
+        Description: {w['Website Description']}
+        Keywords: {w['Keywords']}
+        Tech Stack: {w['Tech Stack']}"""
         for w in websites
     ]
+
     embeddings = model.encode(texts, show_progress_bar=True)
+    
     os.makedirs(os.path.dirname(EMBEDDINGS_FILE), exist_ok=True)
     with open(EMBEDDINGS_FILE, 'wb') as f:
         pickle.dump({'embeddings': embeddings, 'websites': websites, 'texts': texts}, f)
+
     print(f"Embeddings saved to {EMBEDDINGS_FILE}")
 
 
@@ -140,7 +156,7 @@ def test_embedding_search_figma(query, top_k=3):
         print('-'*60)
 
 if __name__ == '__main__':
-    # create_and_store_embeddings()
+    create_and_store_embeddings()
     # test_embedding_search("We’re a dental clinic in California needing a brand-new site with appointment scheduling, services overview, patient forms download, testimonials, and blog integration")
     
-    create_and_store_embeddings_figma()
+    # create_and_store_embeddings_figma()
