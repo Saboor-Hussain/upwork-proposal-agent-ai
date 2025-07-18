@@ -110,7 +110,7 @@ with tabs[0]:
                 st.info("Writing proposal...")
                 time.sleep(1)
 
-                proposal, proposal_id = write_proposal(job_text_wp)
+                proposal_with_justification, proposal_only, proposal_id = write_proposal(job_text_wp)
 
                 st.success("Proposal written.")
                 time.sleep(1)
@@ -119,7 +119,8 @@ with tabs[0]:
 
                 # Store proposal and id in session_state
                 st.session_state['last_proposal_id'] = proposal_id
-                st.session_state['last_proposal'] = proposal
+                st.session_state['last_proposal_with_justification'] = proposal_with_justification
+                st.session_state['last_proposal'] = proposal_only
                 # Reset feedback fields for new proposal
                 st.session_state['wp_comment'] = ""
                 st.session_state['wp_rating'] = 5
@@ -127,7 +128,7 @@ with tabs[0]:
     # --- Display Proposal and Feedback only if proposal exists ---
     if st.session_state.get('last_proposal_id') and st.session_state.get('last_proposal'):
         st.subheader("Written Proposal")
-        st.markdown(st.session_state['last_proposal'])
+        st.markdown(st.session_state['last_proposal_with_justification'])
 
         # --- Copy to Clipboard Button ---
         escaped_proposal = st.session_state['last_proposal'].replace("\\", "\\\\").replace("`", "\\`").replace("\n", "\\n").replace("\"", "\\\"")
