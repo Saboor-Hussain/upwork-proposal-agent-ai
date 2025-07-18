@@ -392,7 +392,7 @@ PROPOSAL_RULES = '''
           • [raw link]
           - Write a short, personalized summary emphasizing that you developed the website, explaining the business or goal behind it, and relating it to the client’s current project.
 
-    4. If the job description lacks a specific niche, use the Best_Portfolio. Otherwise, include 3 relevant portfolio links using the Portfolio Retriever tool:
+    4. If the job description lacks a specific niche, use the Best_Portfolio. Otherwise, must include atlest 3 relevant portfolio links using the Portfolio Retriever tool:
         - Each link should be formatted as a bullet with a personalized summary as described above.
 
     5. Introduce the Figma prototype link with a confident sentence that clearly states you designed it. Example:
@@ -422,24 +422,23 @@ PROPOSAL_RULES = '''
 
 Best_Portfolio = '''
 Designs:
-• https://www.creasions.com/portfolio/website-design-1
-• https://www.creasions.com/portfolio/website-design-2
-• https://www.creasions.com/portfolio/website-design-3
+• https://saundersroofing.com/
+• https://portfolio.muhammadprojects.com/allseason-digital/
+• https://www.clairmontcg.com/
 
 
 Development:
-• https://www.creasions.com/portfolio/website-development-1
-• https://www.creasions.com/portfolio/website-development-2
-• https://www.creasions.com/portfolio/website-development-3
+• https://saundersroofing.com/
+• https://portfolio.muhammadprojects.com/allseason-digital/
+• https://www.clairmontcg.com/
 
 UI/UX or Figma Prototypes:
-• https://www.figma.com/proto/1234567890abcdef/Project-Name?node-id=1%3A2
-• https://www.figma.com/proto/abcdef1234567890/Another-Project?node-id=3%3A4
-• https://www.figma.com/proto/0987654321fedcba/Third
+• https://www.figma.com/proto/44kFKbm0MYmiVuW9IYKnts/My-LRES?node-id=1-12&t=6YM0wu0cXvRVNVIS-1&scaling=scale-down-width&content-scaling=fixed&page-id=0%3A1
+• https://www.figma.com/proto/06hfvOWYQIoQac2vGl6Bw7/Commercial-Plus-LLC?node-id=1129-2&p=f&t=E5lFFwmHQYJVVnhg-1&scaling=scale-down-width&content-scaling=fixed&page-id=0%3A1
+• https://www.figma.com/proto/twh8Mlt4mW6uKK61JTRO1E/All-American?node-id=1-20&t=uHc4xVowaAnLWAPd-1&scaling=scale-down-width&content-scaling=fixed&page-id=0%3A1
 
 Upwork Case Studies:
-• https://www.upwork.com/case-study/1234567890abcdef
-• https://www.upwork.com/case-study/abcdef1234567890
+• https://www.upwork.com/freelancers/muhammadadnan144?s=1044578476142100494&p=1562167439659835392
 
 
 '''
