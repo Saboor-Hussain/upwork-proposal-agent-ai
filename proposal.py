@@ -11,8 +11,6 @@ from langchain.prompts import PromptTemplate
 from upwork_data import MY_DATA
 import json
 from datetime import datetime
-from langchain.vectorstores import FAISS
-from langchain.embeddings import HuggingFaceEmbeddings
 from vector_storage import (
     ProposalHistoryEntry,
     save_proposal_history,
@@ -151,7 +149,7 @@ def get_ranked_portfolio(job_desc):
 
 
 
-def get_relevant_portfolio_upwork(job_desc, top_k=2):
+def get_relevant_portfolio_upwork(job_desc, top_k=3):
     model = SentenceTransformer('all-MiniLM-L6-v2')
     embeddings, websites = load_upwork_embeddings()
     job_emb = model.encode([job_desc])[0]
@@ -167,7 +165,7 @@ def get_relevant_portfolio_upwork(job_desc, top_k=2):
     return [w for w, _ in relevant[:top_k]]
 
 
-def get_relevant_portfolio_figma(job_desc, top_k=2):
+def get_relevant_portfolio_figma(job_desc, top_k=3):
     model = SentenceTransformer('all-MiniLM-L6-v2')
     embeddings, figmas = load_figma_embeddings()
     job_emb = model.encode([job_desc])[0]
@@ -374,39 +372,52 @@ def select_tone(data):
 
 # Proposal writing rules
 PROPOSAL_RULES = '''
+    Prior to drafting the proposal, carefully analyze the comments/feedbacks from {history_entries} (previous jobs). Ensure not to repeat any errors highlighted in those reviews.
+
     Write a personalized Upwork proposal for the following job. Follow these rules:
-    1. Introduction: Write a 2-short lines introduction using the following rule:
-        Use this base:  ({MY_DATA['profile']['profile_views']}+ earned on Upwork | {MY_DATA['profile']['num_of_jobs']}+ projects | {MY_DATA['profile']['years_of_experience']}+ years of experience)
-        Always mention Upwork earnings
-        Align emotionally with client’s industry or goal
-        Speak like a confident business owner (not a junior freelancer)
-        No technical terms or platform names in the intro
-    e.g: "I’ve built dozens of websites for fitness brands, coaches, and consultants focused on growth. With over $400K earned on Upwork, I bring strategy and execution that moves results."
 
-    2. Understanding the Project: In the second paragraph, clearly reference the client's goals and pain points (without rewording the job post). Explain why this project excites you, and avoid listing tech terms or basic features.
-    3. Use the Upwork Portfolio Retriever tool to include 1 relevant Upwork Case Study link ONLY from the matching niche. Only include the raw link, not markdown or titles. Format them as bullets:
-    • [raw link]
-    
-    4. If the job description does not include any specific niche then use the Best_Portfolio. Otherwise, use the Portfolio Retriever tool to include 2-3 relevant portfolio links ONLY from the matching niche. Only include the raw link, not markdown or titles. Format them as bullets:
-    • [raw link]
-    [summary of raw link]
-    • [raw link]
-    [summary of raw link]
-    • [raw link]
-    [summary of raw link]
-    ...
-    5. If the job description includes "Figma" or "figma", use the Figma Portfolio Retriever tool. Mention, "This is the website we have designed and the prototype link is [prototype link]. This is what we have developed [website link]." Ensure the project name matches. Only include the raw link, not markdown or titles.
-    6. If the job description does not include "Figma" or "figma", use the Figma Portfolio Retriever tool to include the Figma link of the relevant category design prototype. Only include the raw link, not markdown or titles.
-    7. Also write the short summary of the Figma link in the same format as above.
-    8. Follow the Creasions writing style (calm, confident, helpful): Avoid sounding like a resume, avoid overselling or listing buzzwords, and show excitement for the client's niche. Never list technical skills or tool names as qualifications.
-    9. Give timeline or delivery estimate if possible. If not mentioned, suggest a confident estimate (e.g., 2–4 weeks).
-    10. Always close with: "Let's schedule a call to discuss this project further and explore how I can contribute to your success."
-    11. Avoid discussing budget or pricing details in the proposal text, regardless of their presence in the job description.
-    12. Do not add any extra line before or after the proposal text.
+    1. Introduction: Write a concise 2-line introduction based on:
+        ({MY_DATA['profile']['profile_views']}+ earned on Upwork | {MY_DATA['profile']['num_of_jobs']}+ projects | {MY_DATA['profile']['years_of_experience']}+ years of experience)
+        Always mention Upwork earnings.
+        Align emotionally with the client’s industry or goal.
+        Speak confidently, like a seasoned business owner.
+        Avoid technical terms or platform names in the intro.
+    Example: "I’ve built dozens of websites for fitness brands, coaches, and consultants focused on growth. With over $400K earned on Upwork, I bring strategy and execution that moves results."
 
-    Note: Ensure the final proposal is humanized. Aim for a personal, friendly, and approachable style, avoiding robotic or generic language, as well as emojis or special characters like "–" which are often used by AI.
+    2. Project Understanding: Clearly reference the client's goals and pain points without rewording the job post. Explain why the project excites you. Avoid listing technical details or features.
 
+    3. Include one relevant Upwork case study link using the Upwork Portfolio Retriever tool:
+        - Provide only the raw link (no markdown or titles).
+        - Format as a bullet point:
+          • [raw link]
+          - Write a short, personalized summary emphasizing that you developed the website, explaining the business or goal behind it, and relating it to the client’s current project.
+
+    4. If the job description lacks a specific niche, use the Best_Portfolio. Otherwise, include 3 relevant portfolio links using the Portfolio Retriever tool:
+        - Each link should be formatted as a bullet with a personalized summary as described above.
+
+    5. Introduce the Figma prototype link with a confident sentence that clearly states you designed it. Example:
+        "You may also review a similar design I created for a client, which reflects my approach and expertise. Here is the link: \n[Figma link]"
+
+    6. If the job description mentions "Figma" (case-insensitive), use the Figma Portfolio Retriever tool to include:
+        - The prototype link with a mention like: 
+          "This is the website we designed and the prototype link is [prototype link]. This is what we developed: [website link]."
+        - Include only raw links without markdown or titles.
+
+    7. Provide a short, personalized summary of the Figma link in the same style as the portfolio summaries.
+
+    8. Follow the Creasions writing style: calm, confident, and helpful. Avoid sounding like a resume or overselling. Show genuine excitement for the client’s niche. Never list technical skills or tool names.
+
+    9. Provide a timeline or delivery estimate if possible. If not mentioned, suggest a confident timeframe (e.g., 2–4 weeks).
+
+    10. Close with: "Let's schedule a call to discuss this project further and explore how I can contribute to your success."
+
+    11. Do not discuss budget or pricing details, regardless of their presence in the job description.
+
+    12. Do not add extra lines before or after the proposal text.
+
+    Note: Ensure the final proposal feels humanized, personal, friendly, and approachable. Avoid robotic or generic language, emojis, or special characters like "–" that are often used by AI.
 '''
+
 
 
 Best_Portfolio = '''
@@ -493,7 +504,6 @@ def write_proposal(job_text):
     if not history_entries:
         history_context += "No relevant history found.\n"
 
-
     data = extract_client_job_data(job_text)
     tone_num, tone_name, tone_score = select_tone_vectorized_factors(data)
     print("\n\n", "="*50, "EXTRACTED DATA AND SELECTED TONE", "="*50)
@@ -504,11 +514,9 @@ def write_proposal(job_text):
     print(f"Selected Tone: Tone {tone_num} - {tone_name}")
     print("\n" + "="*50 + " END OF EXTRACTED DATA AND SELECTED TONE " + "="*50 + "\n\n\n")
 
-
     agent = get_proposal_agent()
     llm = ChatOpenAI(model="gpt-4.1-nano", api_key=OPENAI_API_KEY)
 
-    
     agent_instructions = """
         You must always use the following format for every reasoning step:
         Thought: [your reasoning]
@@ -532,7 +540,11 @@ def write_proposal(job_text):
     Intro:
     """
     llm = ChatOpenAI(model="gpt-4.1-nano", api_key=OPENAI_API_KEY)
-    my_intro = llm([HumanMessage(content=intro_prompt)]).content.strip()
+    try:
+        my_intro = llm([HumanMessage(content=intro_prompt)]).content.strip()
+    except Exception as e:
+        print(f"Error generating intro: {e}")
+        my_intro = "[Error: Could not generate intro]"
     thoughts = f"""
         {my_intro}
         Job: {job_text}
@@ -558,7 +570,6 @@ def write_proposal(job_text):
         Agent Instructions (ReAct format):\n{agent_instructions}\n
         {history_context}
     """
-
 
     prompt_template = PromptTemplate(
         input_variables=["thoughts"],
@@ -595,18 +606,40 @@ Justification of Proposal: [your justification for the proposal, including why y
     user_prompt = prompt_template.format(thoughts=thoughts)
     print("Extracted Data:", data)
     print(f"Selected Tone: Tone {tone_num} - {tone_name} (scores: {tone_score})")
-    proposal = agent.run(user_prompt)
+    try:
+        proposal = agent.run(user_prompt)
+    except Exception as e:
+        print(f"Error running proposal agent: {e}")
+        proposal = "[Error: Could not generate proposal. Please try again later.]"
 
     # Humanize the proposal
-    final_output = humanize_proposal(proposal)
+    try:
+        final_output = humanize_proposal(proposal)
+    except Exception as e:
+        print(f"Error humanizing proposal: {e}")
+        final_output = proposal
     # Checklist evaluation loop
+    max_loops = 5
+    loop_count = 0
     while True:
-        checklist_results = checklist_tool(job_text, final_output)
+        try:
+            checklist_results = checklist_tool(job_text, final_output)
+        except Exception as e:
+            print(f"Error running checklist tool: {e}")
+            checklist_results = {}
         failed_items = [item for item, passed in checklist_results.items() if not passed]
         if not failed_items:
             break
+        if loop_count >= max_loops:
+            print("Max correction loops reached. Returning best effort proposal.")
+            break
         corrections = f"Please correct the following issues: {failed_items}"
-        final_output = proposal_corrector(final_output, corrections)
+        try:
+            final_output = proposal_corrector(final_output, corrections, job_text=job_text)
+        except Exception as e:
+            print(f"Error correcting proposal: {e}")
+            break
+        loop_count += 1
     proposal_id = str(uuid.uuid4())
     entry = ProposalHistoryEntry(
         date_time=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
@@ -617,13 +650,19 @@ Justification of Proposal: [your justification for the proposal, including why y
         proposal_id=proposal_id
     )
 
-    final_Proposal = replace_with_humanized(proposal,final_output)
-    
+    try:
+        final_Proposal = replace_with_humanized(proposal,final_output)
+    except Exception as e:
+        print(f"Error replacing with humanized proposal: {e}")
+        final_Proposal = final_output
     print("\n\n", "="*50, "FINAL PROPOSAL", "="*50)
     print(final_Proposal)
     print("\n" + "="*50 + " END OF FINAL PROPOSAL " + "="*40 + "\n\n\n")
-    save_proposal_history(entry)
-    return final_Proposal, proposal_id
+    try:
+        save_proposal_history(entry)
+    except Exception as e:
+        print(f"Error saving proposal history: {e}")
+    return final_Proposal, final_output, proposal_id
 
 
 
@@ -649,9 +688,9 @@ def replace_with_humanized(proposal, humanized_proposal):
     if tone_justification:
         result += f"---\n{tone_justification}\n"
     if final_answer:
-        result += f"---\n\n{humanized_proposal}\n"
+        result += f"---\nProposal:\n\n{humanized_proposal}\n"
     else:
-        result += f"\n{humanized_proposal}\n"
+        result += f"---\nProposal:\n{humanized_proposal}\n"
     if proposal_justification:
         result += f"---\n{proposal_justification}\n---"
     return result.strip()
