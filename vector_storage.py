@@ -66,15 +66,37 @@ def save_proposal_history(entry: ProposalHistoryEntry):
 def get_all_history_entries():
     ids_file = "proposal_ids.json"
     entries = []
-    if os.path.exists(ids_file):
-        with open(ids_file, 'r', encoding='utf-8') as f:
-            ids = json.load(f)
-        index = pinecone_init()
-        for pid in ids:
+    index = pinecone_init()
+    ids = []
+    try:
+        stats = index.describe_index_stats()
+        vector_count = stats.get('total_vector_count', 0)
+        # Query Pinecone for all IDs (works for small/medium indexes)
+        if vector_count > 0:
+            zero_vec = [0.0] * VECTOR_DIM
+            res = index.query(vector=zero_vec, top_k=vector_count, include_metadata=False, include_values=False)
+            ids = [match['id'] for match in res['matches']]
+        else:
+            ids = []
+    except Exception as e:
+        print(f"Error fetching IDs from Pinecone: {e}")
+        ids = []
+    try:
+        with open(ids_file, 'w', encoding='utf-8') as f:
+            json.dump(ids, f)
+    except Exception as e:
+        print(f"Error updating proposal_ids.json: {e}")
+    ids = sorted(ids, reverse=True)
+    for pid in ids:
+        try:
             res = index.fetch([pid])
             for v in res.vectors.values():
                 meta = v.metadata
                 entries.append(ProposalHistoryEntry.from_dict(meta))
+        except Exception as e:
+            print(f"Error fetching proposal {pid}: {e}")
+
+    # print("Entries fetched from Pinecone:", len(entries))
     return entries
 
 # --- Update proposal history by ID ---
