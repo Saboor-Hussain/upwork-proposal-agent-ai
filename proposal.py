@@ -386,14 +386,24 @@ PROPOSAL_RULES = '''
 
     2. Project Understanding: Clearly reference the client's goals and pain points without rewording the job post. Explain why the project excites you. Avoid listing technical details or features.
 
-    3. Include one relevant Upwork case study link using the Upwork Portfolio Retriever tool:
+    3. Introduce the Upwork Portfolio link with a confident sentence "Kindly review one of my past project case studies from Upwork that aligns with your niche. You'll find a detailed overview along with the 5-star feedback from the client, so you can better understand what I delivered and how it was received."
         - Provide only the raw link (no markdown or titles).
         - Format as a bullet point:
           • [raw link]
           - Write a short, personalized summary emphasizing that you developed the website, explaining the business or goal behind it, and relating it to the client’s current project.
 
-    4. If the job description lacks a specific niche, use the Best_Portfolio. Otherwise, must include atlest 3 relevant portfolio links using the Portfolio Retriever tool:
-        - Each link should be formatted as a bullet with a personalized summary as described above.
+    4. If the job description lacks a specific niche, use the Best_Portfolio. Otherwise, include at least 3 relevant portfolio links using the Portfolio Retriever tool:
+
+    - Before listing the links, add the sentence like:
+      "Here are a few relevant websites I’ve created for past clients."
+
+    - Each link must be formatted as a bullet point, followed by a short, personalized summary:
+      • [raw link]  
+      Write a summary that:
+        - Clearly states that you developed the website.  
+        - Briefly explains the business or objective behind it.  
+        - Highlights how it relates to the client’s current project.
+
 
     5. Introduce the Figma prototype link with a confident sentence that clearly states you designed it. Example:
         "You may also review a similar design I created for a client, which reflects my approach and expertise. Here is the link: \n[Figma link]"
