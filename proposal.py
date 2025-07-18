@@ -702,7 +702,8 @@ def checklist_tool(job_text, proposal):
     checklist = [
         "Tone is accurate based on budget and niche",
         "$400K+ earnings always mentioned in intro",
-        "Only validated portfolio links used",
+        "Upwork case study link included",
+        "Portfolio links are included",
         "Figma logic followed",
         "Timeline is stated",
         "Strong CTA included",
